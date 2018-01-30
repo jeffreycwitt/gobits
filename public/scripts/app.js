@@ -36,8 +36,8 @@ var GoBitsApp = function (_React$Component) {
       categories: [],
       goals: [],
       user: {
-        name: "Test",
-        email: "test@example.com"
+        name: "John Doe",
+        email: "johndoe@example.com"
       },
       goldAmount: 0
     };
@@ -435,12 +435,12 @@ var Header = function (_React$Component2) {
         null,
         React.createElement(
           "h1",
-          null,
+          { id: "headliner" },
           this.props.title
         ),
         React.createElement(
           "p",
-          null,
+          { id: "tagliner" },
           this.props.subtitle
         )
       );
@@ -886,13 +886,11 @@ var User = function (_React$Component12) {
         "div",
         null,
         React.createElement(
-          "p",
-          null,
-          this.props.user.name
-        ),
-        React.createElement(
-          "p",
-          null,
+          "h2",
+          { id: "me" },
+          "Me: ",
+          this.props.user.name,
+          " ",
           this.props.user.email
         )
       );

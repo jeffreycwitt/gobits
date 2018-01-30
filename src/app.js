@@ -32,8 +32,8 @@ class GoBitsApp extends React.Component {
       goals: [
       ],
       user: {
-        name: "Test",
-        email: "test@example.com"
+        name: "John Doe",
+        email: "johndoe@example.com"
       },
       goldAmount: 0
     }
@@ -383,8 +383,8 @@ class Header extends React.Component {
   render(){
     return (
       <div>
-        <h1>{this.props.title}</h1>
-        <p>{this.props.subtitle}</p>
+        <h1 id="headliner">{this.props.title}</h1>
+        <p id="tagliner">{this.props.subtitle}</p>
       </div>
     );
 
@@ -615,8 +615,7 @@ class User extends React.Component {
   render(){
     return (
       <div>
-        <p>{this.props.user.name}</p>
-        <p>{this.props.user.email}</p>
+        <h2 id="me">Me: {this.props.user.name} {this.props.user.email}</h2>
       </div>
     );
   }
