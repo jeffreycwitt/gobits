@@ -525,15 +525,11 @@ var Goal = function (_React$Component4) {
           " by ",
           this.props.goal.date
         ),
-        React.createElement(
-          "button",
-          {
-            onClick: function onClick(e) {
-              _this11.props.handleDeleteGoal(_this11.props.goal.id);
-            }
-          },
-          "remove"
-        )
+        React.createElement("span", { className: "fa fa-trash",
+          onClick: function onClick(e) {
+            _this11.props.handleDeleteGoal(_this11.props.goal.id);
+          }
+        })
       );
     }
   }]);
@@ -586,7 +582,7 @@ var AddGoal = function (_React$Component5) {
           React.createElement(
             "button",
             null,
-            "Add Goal"
+            React.createElement("span", { className: "fa fa-plus" })
           )
         )
       );
@@ -621,14 +617,18 @@ var Categories = function (_React$Component6) {
           null,
           "Categories"
         ),
-        this.props.categories.map(function (c, i) {
-          return React.createElement(Category, {
-            key: i,
-            category: c,
-            changeFocusedCategory: _this14.props.changeFocusedCategory,
-            handleDeleteCategory: _this14.props.handleDeleteCategory
-          });
-        })
+        React.createElement(
+          "ul",
+          null,
+          this.props.categories.map(function (c, i) {
+            return React.createElement(Category, {
+              key: i,
+              category: c,
+              changeFocusedCategory: _this14.props.changeFocusedCategory,
+              handleDeleteCategory: _this14.props.handleDeleteCategory
+            });
+          })
+        )
       );
     }
   }]);
@@ -666,15 +666,11 @@ var Category = function (_React$Component7) {
           { onClick: this.changeFocusedCategory },
           this.props.category.title
         ),
-        React.createElement(
-          "button",
-          {
-            onClick: function onClick(e) {
-              _this16.props.handleDeleteCategory(_this16.props.category.id);
-            }
-          },
-          "remove"
-        )
+        React.createElement("span", { className: "fa fa-trash",
+          onClick: function onClick(e) {
+            _this16.props.handleDeleteCategory(_this16.props.category.id);
+          }
+        })
       );
     }
   }]);
@@ -725,7 +721,7 @@ var AddCategory = function (_React$Component8) {
           React.createElement(
             "button",
             null,
-            "Add Category"
+            React.createElement("span", { className: "fa fa-plus" })
           )
         )
       );
@@ -805,15 +801,11 @@ var Task = function Task(props) {
         props.handleCheck(props.index, props.goalIndex);
       }
     }),
-    React.createElement(
-      "button",
-      {
-        onClick: function onClick(e) {
-          props.handleDeleteTask(props.index, props.goalIndex);
-        }
-      },
-      "remove"
-    )
+    React.createElement("span", { className: "fa fa-trash",
+      onClick: function onClick(e) {
+        props.handleDeleteTask(props.index, props.goalIndex);
+      }
+    })
   );
 };
 
@@ -862,7 +854,7 @@ var AddTask = function (_React$Component11) {
           React.createElement(
             "button",
             null,
-            "Add Task"
+            React.createElement("span", { className: "fa fa-plus" })
           )
         )
       );

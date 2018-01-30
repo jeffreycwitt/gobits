@@ -422,13 +422,11 @@ class Goal extends React.Component {
     return (
       <li className={!this.props.goal.completed ? "notCompleted" : "completed"}>
         <a onClick={this.changeFocusedGoal}>{this.props.goal.title} by {this.props.goal.date}</a>
-      <button
+      <span className="fa fa-trash"
         onClick={(e) => {
           this.props.handleDeleteGoal(this.props.goal.id);
         }}
-      >
-        remove
-      </button>
+      />
       </li>
     );
   }
@@ -458,7 +456,7 @@ class AddGoal extends React.Component {
       <form onSubmit={this.handleAddGoal}>
         <input type="text" name="goal"/>
         <input type="date" name="date"/>
-        <button>Add Goal</button>
+        <button><span className="fa fa-plus"/></button>
       </form>
       </div>
     );
@@ -471,12 +469,14 @@ class Categories extends React.Component {
     return (
       <div>
         <h2>Categories</h2>
+        <ul>
         {this.props.categories.map((c,i) => { return <Category
           key={i}
           category={c}
           changeFocusedCategory={this.props.changeFocusedCategory}
           handleDeleteCategory={this.props.handleDeleteCategory}
         />})}
+        </ul>
       </div>
     );
   }
@@ -493,13 +493,11 @@ class Category extends React.Component {
   render(){
     return (
       <li><a onClick={this.changeFocusedCategory}>{this.props.category.title}</a>
-        <button
+        <span className="fa fa-trash"
           onClick={(e) => {
             this.props.handleDeleteCategory(this.props.category.id);
           }}
-        >
-          remove
-        </button>
+        />
       </li>
     );
   }
@@ -527,7 +525,7 @@ class AddCategory extends React.Component {
         {this.state.error && <p>{this.state.error}</p>}
       <form onSubmit={this.handleAddCategory}>
         <input type="text" name="category"/>
-        <button>Add Category</button>
+        <button><span className="fa fa-plus"/></button>
       </form>
       </div>
     );
@@ -571,13 +569,11 @@ const Task = (props) => {
         }}
       >
       </input>
-      <button
+      <span className="fa fa-trash"
         onClick={(e) => {
           props.handleDeleteTask(props.index, props.goalIndex);
         }}
-      >
-        remove
-      </button>
+      />
     </li>
   );
 }
@@ -606,7 +602,7 @@ class AddTask extends React.Component {
       <form onSubmit={this.handleAddTask}>
         <input type="text" name="task"/>
         <input type="date" name="date"/>
-        <button>Add Task</button>
+        <button><span className="fa fa-plus"/></button>
       </form>
       </div>
     );
