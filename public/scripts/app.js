@@ -18,39 +18,85 @@ var GoBitsApp = function (_React$Component) {
 
     _this.changeFocusedGoal = _this.changeFocusedGoal.bind(_this);
     _this.handleAddGoal = _this.handleAddGoal.bind(_this);
+    _this.changeFocusedCategory = _this.changeFocusedCategory.bind(_this);
+    _this.handleAddCategory = _this.handleAddCategory.bind(_this);
+    _this.handleDeleteCategory = _this.handleDeleteCategory.bind(_this);
     _this.handleAddTask = _this.handleAddTask.bind(_this);
     _this.handleCheck = _this.handleCheck.bind(_this);
     _this.handleDeleteTask = _this.handleDeleteTask.bind(_this);
     _this.handleDeleteGoal = _this.handleDeleteGoal.bind(_this);
     _this.setSubtitle = _this.setSubtitle.bind(_this);
-    _this.state = {
+    _this.displayTasks = _this.displayTasks.bind(_this);
+    _this.filteredGoals = _this.filteredGoals.bind(_this);
+    var emptyState = {
       subtitle: "Get your life together",
       messages: ["Get your life together", "Aren't you better than this?", "Seriously, Aren't you better than this?", "Life really isn't that hard; why are you having so much trouble", "Other people don't need a to do list; they just do stuff", "Get it together!", "Stopping making to do lists and just do your work!", "Why are you have so much trouble getting stuff done it?"],
-      focusedGoal: 0,
+      focusedGoal: null,
+      focusedCategory: null,
+      categories: [],
+      goals: [],
+      user: {
+        name: "Test",
+        email: "test@example.com"
+      },
+      goldAmount: 0
+    };
+
+    var testState = {
+      subtitle: "Get your life together",
+      messages: ["Get your life together", "Aren't you better than this?", "Seriously, Aren't you better than this?", "Life really isn't that hard; why are you having so much trouble", "Other people don't need a to do list; they just do stuff", "Get it together!", "Stopping making to do lists and just do your work!", "Why are you have so much trouble getting stuff done it?"],
+      focusedGoal: null,
+      focusedCategory: null,
+      categories: [{
+        id: "job",
+        title: "job"
+      }, {
+        id: "social",
+        title: "social"
+      }, {
+        id: "language",
+        title: "language"
+      }],
       goals: [{
+        id: "learngerman",
+        title: "learn german",
+        category: "language",
+        tasks: []
+      }, {
+        id: "learnfrench",
+        title: "learn french",
+        category: "language",
+        tasks: []
+      }, {
+        id: "getnewjob",
         title: "get new job",
         category: "job",
         date: "June, 2016",
         completed: false,
         tasks: [{
+          id: "createresume",
           title: "create resume",
           date: "today",
           completed: false
         }, {
+          id: "sendoutresume",
           title: "send out resume",
           date: "week",
           completed: false
         }]
       }, {
+        id: "makenewfriend",
         title: "make new friend",
         category: "social",
         date: "May, 2016",
         completed: false,
         tasks: [{
+          "id": "gotoparty",
           title: "go to party",
           date: "today",
           completed: false
         }, {
+          "id": "startmeetupgroup",
           title: "start meet up group",
           date: "week",
           completed: false
@@ -62,6 +108,7 @@ var GoBitsApp = function (_React$Component) {
       },
       goldAmount: 10
     };
+    _this.state = emptyState;
     return _this;
   }
 
@@ -87,34 +134,64 @@ var GoBitsApp = function (_React$Component) {
       this.setSubtitle();
     }
   }, {
+    key: "changeFocusedCategory",
+    value: function changeFocusedCategory(index) {
+      this.setState(function () {
+        return {
+          focusedCategory: index
+        };
+      });
+      this.setSubtitle();
+    }
+  }, {
     key: "handleAddGoal",
-    value: function handleAddGoal(goal) {
+    value: function handleAddGoal(goal, date, category) {
       if (!goal) {
         return 'Enter valid value to add item';
       }
       this.setState(function (prevState) {
         return {
-          goals: prevState.goals.concat({ title: goal, completed: false, tasks: [] }),
-          goldAmount: prevState.goldAmount + 1
+          goals: prevState.goals.concat({ id: goal, title: goal, category: category, date: date, completed: false, tasks: [] }),
+          goldAmount: prevState.goldAmount + 1,
+          focusedGoal: goal
+        };
+      });
+      this.setSubtitle();
+    }
+  }, {
+    key: "handleAddCategory",
+    value: function handleAddCategory(category) {
+      if (!category) {
+        return 'Enter valid value to add item';
+      }
+      this.setState(function (prevState) {
+        return {
+          categories: prevState.categories.concat({ id: category, title: category }),
+          goldAmount: prevState.goldAmount + 1,
+          focusedCategory: category
         };
       });
       this.setSubtitle();
     }
   }, {
     key: "handleAddTask",
-    value: function handleAddTask(task, goalIndex) {
+    value: function handleAddTask(task, date, goalIndex) {
       var _this2 = this;
 
       if (!task) {
         return 'Enter valid value to add item';
       }
       this.setState(function (prevState) {
-        var updatedTasks = prevState.goals[goalIndex].tasks.concat({ title: task, completed: false });
+        //const updatedTasks = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.concat({title: task, date: date, completed: false})
         var prevStateCopy = prevState;
-        prevStateCopy.goals[goalIndex].tasks = updatedTasks;
+        var goal = prevStateCopy.goals.filter(function (g) {
+          return g.id === goalIndex;
+        })[0];
+        var updatedTasks = goal.tasks.concat({ id: task, title: task, date: date, completed: false });
+        goal.tasks = updatedTasks;
 
-        var goalStatus = _this2.setGoalStatus(prevStateCopy.goals[goalIndex]);
-        prevStateCopy.goals[goalIndex].completed = goalStatus;
+        var goalStatus = _this2.setGoalStatus(goal);
+        goal.completed = goalStatus;
 
         return {
           goals: prevStateCopy.goals,
@@ -140,12 +217,24 @@ var GoBitsApp = function (_React$Component) {
       var _this3 = this;
 
       this.setState(function (prevState) {
-        var currentValue = prevState.goals[goalIndex].tasks[taskIndex].completed;
+        var currentValue = prevState.goals.filter(function (g) {
+          return g.id === goalIndex;
+        })[0].tasks.filter(function (t) {
+          return t.id === taskIndex;
+        })[0].completed;
         var prevStateCopy = prevState;
-        prevStateCopy.goals[goalIndex].tasks[taskIndex].completed = !currentValue;
+        prevStateCopy.goals.filter(function (g) {
+          return g.id === goalIndex;
+        })[0].tasks.filter(function (t) {
+          return t.id === taskIndex;
+        })[0].completed = !currentValue;
 
-        var goalStatus = _this3.setGoalStatus(prevStateCopy.goals[goalIndex]);
-        prevStateCopy.goals[goalIndex].completed = goalStatus;
+        var goalStatus = _this3.setGoalStatus(prevStateCopy.goals.filter(function (g) {
+          return g.id === goalIndex;
+        })[0]);
+        prevStateCopy.goals.filter(function (g) {
+          return g.id === goalIndex;
+        })[0].completed = goalStatus;
 
         return {
           goals: prevStateCopy.goals,
@@ -161,9 +250,15 @@ var GoBitsApp = function (_React$Component) {
 
       this.setState(function (prevState) {
         var prevStateCopy = prevState;
-        prevStateCopy.goals[goalIndex].tasks.splice(taskIndex, 1);
-        var goalStatus = _this4.setGoalStatus(prevStateCopy.goals[goalIndex]);
-        prevStateCopy.goals[goalIndex].completed = goalStatus;
+        prevStateCopy.goals.filter(function (g) {
+          return g.id === goalIndex;
+        })[0].tasks.splice(taskIndex, 1);
+        var goalStatus = _this4.setGoalStatus(prevStateCopy.goals.filter(function (g) {
+          return g.id === goalIndex;
+        })[0]);
+        prevStateCopy.goals.filter(function (g) {
+          return g.id === goalIndex;
+        })[0].completed = goalStatus;
         return {
           goals: prevStateCopy.goals,
           goldAmount: prevState.goldAmount + 1
@@ -175,9 +270,25 @@ var GoBitsApp = function (_React$Component) {
     key: "handleDeleteGoal",
     value: function handleDeleteGoal(goalIndex) {
 
+      if (this.state.focusedGoal === goalIndex) {
+        this.setState(function () {
+          return {
+            focusedGoal: null
+          };
+        });
+      }
+
       this.setState(function (prevState) {
+
         var prevStateCopy = prevState;
-        prevStateCopy.goals.splice(goalIndex, 1);
+
+        var index = prevStateCopy.goals.findIndex(function (g, i) {
+          if (g.id === goalIndex) {
+            return true;
+          }
+        });
+        console.log("index", index);
+        prevStateCopy.goals.splice(index, 1);
         return {
           goals: prevStateCopy.goals,
           goldAmount: prevState.goldAmount + 1
@@ -186,11 +297,103 @@ var GoBitsApp = function (_React$Component) {
       this.setSubtitle();
     }
   }, {
+    key: "handleDeleteCategory",
+    value: function handleDeleteCategory(categoryIndex) {
+
+      if (this.state.focusedCategory === categoryIndex) {
+        this.setState(function () {
+          return {
+            focusedCategory: null
+          };
+        });
+      }
+
+      this.setState(function (prevState) {
+
+        var prevStateCopy = prevState;
+
+        var index = prevStateCopy.categories.findIndex(function (c, i) {
+          if (c.id === categoryIndex) {
+            return true;
+          }
+        });
+        console.log(index);
+        prevStateCopy.categories.splice(index, 1);
+        return {
+          categories: prevStateCopy.categories,
+          goldAmount: prevState.goldAmount + 1
+        };
+      });
+      this.setSubtitle();
+    }
+  }, {
+    key: "filteredGoals",
+    value: function filteredGoals() {
+      var _this5 = this;
+
+      if (this.state.focusedCategory) {
+
+        var newGoals = this.state.goals.filter(function (g, i) {
+          if (g.category === _this5.state.focusedCategory) {
+            return g;
+          }
+        });
+        return newGoals;
+      } else {
+        return this.state.goals;
+      }
+    }
+  }, {
+    key: "displayTasks",
+    value: function displayTasks() {
+      var _this6 = this;
+
+      if (this.state.focusedGoal) {
+        var loadTasks = function loadTasks() {
+          if (_this6.state.goals.filter(function (g) {
+            return g.id === _this6.state.focusedGoal;
+          })[0]) {
+            return React.createElement(Tasks, {
+              tasks: _this6.state.goals.filter(function (g) {
+                return g.id === _this6.state.focusedGoal;
+              })[0].tasks,
+              goalIndex: _this6.state.focusedGoal,
+              handleCheck: _this6.handleCheck,
+              handleDeleteTask: _this6.handleDeleteTask });
+          }
+        };
+        return React.createElement(
+          "div",
+          null,
+          React.createElement(FocusedGoal, { goal: this.state.goals.filter(function (g) {
+              return g.id === _this6.state.focusedGoal;
+            })[0] }),
+          loadTasks(),
+          React.createElement(AddTask, {
+            goalIndex: this.state.focusedGoal, handleAddTask: this.handleAddTask })
+        );
+      }
+    }
+  }, {
+    key: "displayGoals",
+    value: function displayGoals() {
+      if (this.state.focusedCategory) {
+        return React.createElement(
+          "div",
+          null,
+          React.createElement(Goals, {
+            goals: this.filteredGoals(), category: this.state.focusedCategory, changeFocusedGoal: this.changeFocusedGoal, handleDeleteGoal: this.handleDeleteGoal }),
+          React.createElement(AddGoal, {
+            category: this.state.focusedCategory,
+            handleAddGoal: this.handleAddGoal })
+        );
+      }
+    }
+  }, {
     key: "render",
     value: function render() {
       var title = "Gobits";
-
-      console.log;
+      console.log(this.state);
       return React.createElement(
         "div",
         null,
@@ -198,20 +401,14 @@ var GoBitsApp = function (_React$Component) {
         React.createElement("hr", null),
         React.createElement(User, { user: this.state.user }),
         React.createElement("hr", null),
-        React.createElement(Goals, {
-          goals: this.state.goals, changeFocusedGoal: this.changeFocusedGoal }),
-        React.createElement(AddGoal, {
-          handleAddGoal: this.handleAddGoal }),
+        React.createElement(Categories, {
+          categories: this.state.categories, changeFocusedCategory: this.changeFocusedCategory, handleDeleteCategory: this.handleDeleteCategory }),
+        React.createElement(AddCategory, {
+          handleAddCategory: this.handleAddCategory }),
         React.createElement("hr", null),
-        React.createElement(FocusedGoal, { key: this.state.goals[this.state.focusedGoal].title, goal: this.state.goals[this.state.focusedGoal] }),
-        React.createElement(Tasks, {
-          tasks: this.state.goals[this.state.focusedGoal].tasks,
-          goalIndex: this.state.focusedGoal,
-          handleCheck: this.handleCheck,
-          handleDeleteTask: this.handleDeleteTask }),
-        React.createElement(AddTask, {
-          goalIndex: this.state.focusedGoal, handleAddTask: this.handleAddTask }),
+        this.displayGoals(),
         React.createElement("hr", null),
+        this.displayTasks(),
         React.createElement(Gold, {
           goldAmount: this.state.goldAmount })
       );
@@ -268,7 +465,7 @@ var Goals = function (_React$Component3) {
   _createClass(Goals, [{
     key: "render",
     value: function render() {
-      var _this7 = this;
+      var _this9 = this;
 
       return React.createElement(
         "div",
@@ -276,15 +473,15 @@ var Goals = function (_React$Component3) {
         React.createElement(
           "h2",
           null,
-          "Goals"
+          "Goals for ",
+          this.props.category
         ),
         this.props.goals.map(function (o, i) {
           return React.createElement(Goal, {
             key: i,
-            index: i,
             goal: o,
-            changeFocusedGoal: _this7.props.changeFocusedGoal,
-            handleDeleteGoal: _this7.props.handleDeleteGoal
+            changeFocusedGoal: _this9.props.changeFocusedGoal,
+            handleDeleteGoal: _this9.props.handleDeleteGoal
           });
         })
       );
@@ -300,33 +497,37 @@ var Goal = function (_React$Component4) {
   function Goal(props) {
     _classCallCheck(this, Goal);
 
-    var _this8 = _possibleConstructorReturn(this, (Goal.__proto__ || Object.getPrototypeOf(Goal)).call(this, props));
+    var _this10 = _possibleConstructorReturn(this, (Goal.__proto__ || Object.getPrototypeOf(Goal)).call(this, props));
 
-    _this8.changeFocusedGoal = _this8.changeFocusedGoal.bind(_this8);
-    return _this8;
+    _this10.changeFocusedGoal = _this10.changeFocusedGoal.bind(_this10);
+    return _this10;
   }
 
   _createClass(Goal, [{
     key: "changeFocusedGoal",
     value: function changeFocusedGoal() {
-      this.props.changeFocusedGoal(this.props.index);
+      this.props.changeFocusedGoal(this.props.goal.id);
     }
   }, {
     key: "render",
     value: function render() {
-      var _this9 = this;
+      var _this11 = this;
 
       return React.createElement(
         "li",
-        { className: !this.props.goal.completed ? "notCompleted" : "completed", onClick: this.changeFocusedGoal },
-        this.props.goal.title,
-        " by ",
-        this.props.goal.date,
+        { className: !this.props.goal.completed ? "notCompleted" : "completed" },
+        React.createElement(
+          "a",
+          { onClick: this.changeFocusedGoal },
+          this.props.goal.title,
+          " by ",
+          this.props.goal.date
+        ),
         React.createElement(
           "button",
           {
             onClick: function onClick(e) {
-              props.handleDeleteGoal(_this9.props.goalIndex);
+              _this11.props.handleDeleteGoal(_this11.props.goal.id);
             }
           },
           "remove"
@@ -344,21 +545,22 @@ var AddGoal = function (_React$Component5) {
   function AddGoal(props) {
     _classCallCheck(this, AddGoal);
 
-    var _this10 = _possibleConstructorReturn(this, (AddGoal.__proto__ || Object.getPrototypeOf(AddGoal)).call(this, props));
+    var _this12 = _possibleConstructorReturn(this, (AddGoal.__proto__ || Object.getPrototypeOf(AddGoal)).call(this, props));
 
-    _this10.handleAddGoal = _this10.handleAddGoal.bind(_this10);
-    _this10.state = {
+    _this12.handleAddGoal = _this12.handleAddGoal.bind(_this12);
+    _this12.state = {
       error: undefined
     };
-    return _this10;
+    return _this12;
   }
 
   _createClass(AddGoal, [{
     key: "handleAddGoal",
     value: function handleAddGoal(e) {
       e.preventDefault();
+      var date = e.target.elements.date.value;
       var goal = e.target.elements.goal.value.trim();
-      var error = this.props.handleAddGoal(goal);
+      var error = this.props.handleAddGoal(goal, date, this.props.category);
       this.setState(function () {
         return { error: error };
       });
@@ -378,6 +580,7 @@ var AddGoal = function (_React$Component5) {
           "form",
           { onSubmit: this.handleAddGoal },
           React.createElement("input", { type: "text", name: "goal" }),
+          React.createElement("input", { type: "date", name: "date" }),
           React.createElement(
             "button",
             null,
@@ -391,8 +594,147 @@ var AddGoal = function (_React$Component5) {
   return AddGoal;
 }(React.Component);
 
-var FocusedGoal = function (_React$Component6) {
-  _inherits(FocusedGoal, _React$Component6);
+//options or tasks
+
+
+var Categories = function (_React$Component6) {
+  _inherits(Categories, _React$Component6);
+
+  function Categories() {
+    _classCallCheck(this, Categories);
+
+    return _possibleConstructorReturn(this, (Categories.__proto__ || Object.getPrototypeOf(Categories)).apply(this, arguments));
+  }
+
+  _createClass(Categories, [{
+    key: "render",
+    value: function render() {
+      var _this14 = this;
+
+      return React.createElement(
+        "div",
+        null,
+        React.createElement(
+          "h2",
+          null,
+          "Categories"
+        ),
+        this.props.categories.map(function (c, i) {
+          return React.createElement(Category, {
+            key: i,
+            category: c,
+            changeFocusedCategory: _this14.props.changeFocusedCategory,
+            handleDeleteCategory: _this14.props.handleDeleteCategory
+          });
+        })
+      );
+    }
+  }]);
+
+  return Categories;
+}(React.Component);
+
+var Category = function (_React$Component7) {
+  _inherits(Category, _React$Component7);
+
+  function Category(props) {
+    _classCallCheck(this, Category);
+
+    var _this15 = _possibleConstructorReturn(this, (Category.__proto__ || Object.getPrototypeOf(Category)).call(this, props));
+
+    _this15.changeFocusedCategory = _this15.changeFocusedCategory.bind(_this15);
+    return _this15;
+  }
+
+  _createClass(Category, [{
+    key: "changeFocusedCategory",
+    value: function changeFocusedCategory() {
+      this.props.changeFocusedCategory(this.props.category.id);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this16 = this;
+
+      return React.createElement(
+        "li",
+        null,
+        React.createElement(
+          "a",
+          { onClick: this.changeFocusedCategory },
+          this.props.category.title
+        ),
+        React.createElement(
+          "button",
+          {
+            onClick: function onClick(e) {
+              _this16.props.handleDeleteCategory(_this16.props.category.id);
+            }
+          },
+          "remove"
+        )
+      );
+    }
+  }]);
+
+  return Category;
+}(React.Component);
+
+var AddCategory = function (_React$Component8) {
+  _inherits(AddCategory, _React$Component8);
+
+  function AddCategory(props) {
+    _classCallCheck(this, AddCategory);
+
+    var _this17 = _possibleConstructorReturn(this, (AddCategory.__proto__ || Object.getPrototypeOf(AddCategory)).call(this, props));
+
+    _this17.handleAddCategory = _this17.handleAddCategory.bind(_this17);
+    _this17.state = {
+      error: undefined
+    };
+    return _this17;
+  }
+
+  _createClass(AddCategory, [{
+    key: "handleAddCategory",
+    value: function handleAddCategory(e) {
+      e.preventDefault();
+      var category = e.target.elements.category.value.trim();
+      var error = this.props.handleAddCategory(category);
+      this.setState(function () {
+        return { error: error };
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return React.createElement(
+        "div",
+        null,
+        this.state.error && React.createElement(
+          "p",
+          null,
+          this.state.error
+        ),
+        React.createElement(
+          "form",
+          { onSubmit: this.handleAddCategory },
+          React.createElement("input", { type: "text", name: "category" }),
+          React.createElement(
+            "button",
+            null,
+            "Add Category"
+          )
+        )
+      );
+    }
+  }]);
+
+  return AddCategory;
+}(React.Component);
+
+var FocusedGoal = function (_React$Component9) {
+  _inherits(FocusedGoal, _React$Component9);
 
   function FocusedGoal() {
     _classCallCheck(this, FocusedGoal);
@@ -415,8 +757,8 @@ var FocusedGoal = function (_React$Component6) {
   return FocusedGoal;
 }(React.Component);
 
-var Tasks = function (_React$Component7) {
-  _inherits(Tasks, _React$Component7);
+var Tasks = function (_React$Component10) {
+  _inherits(Tasks, _React$Component10);
 
   function Tasks() {
     _classCallCheck(this, Tasks);
@@ -427,19 +769,19 @@ var Tasks = function (_React$Component7) {
   _createClass(Tasks, [{
     key: "render",
     value: function render() {
-      var _this13 = this;
+      var _this20 = this;
 
       return React.createElement(
         "div",
         null,
-        this.props.tasks.map(function (t, i) {
+        this.props.tasks && this.props.tasks.map(function (t, i) {
           return React.createElement(Task, {
             key: t.title,
             task: t,
-            index: i,
-            goalIndex: _this13.props.goalIndex,
-            handleCheck: _this13.props.handleCheck,
-            handleDeleteTask: _this13.props.handleDeleteTask });
+            index: t.id,
+            goalIndex: _this20.props.goalIndex,
+            handleCheck: _this20.props.handleCheck,
+            handleDeleteTask: _this20.props.handleDeleteTask });
         })
       );
     }
@@ -473,27 +815,28 @@ var Task = function Task(props) {
   );
 };
 
-var AddTask = function (_React$Component8) {
-  _inherits(AddTask, _React$Component8);
+var AddTask = function (_React$Component11) {
+  _inherits(AddTask, _React$Component11);
 
   function AddTask(props) {
     _classCallCheck(this, AddTask);
 
-    var _this14 = _possibleConstructorReturn(this, (AddTask.__proto__ || Object.getPrototypeOf(AddTask)).call(this, props));
+    var _this21 = _possibleConstructorReturn(this, (AddTask.__proto__ || Object.getPrototypeOf(AddTask)).call(this, props));
 
-    _this14.handleAddTask = _this14.handleAddTask.bind(_this14);
-    _this14.state = {
+    _this21.handleAddTask = _this21.handleAddTask.bind(_this21);
+    _this21.state = {
       error: undefined
     };
-    return _this14;
+    return _this21;
   }
 
   _createClass(AddTask, [{
     key: "handleAddTask",
     value: function handleAddTask(e) {
       e.preventDefault();
+      var date = e.target.elements.date.value;
       var task = e.target.elements.task.value.trim();
-      var error = this.props.handleAddTask(task, this.props.goalIndex);
+      var error = this.props.handleAddTask(task, date, this.props.goalIndex);
       this.setState(function () {
         return { error: error };
       });
@@ -513,6 +856,7 @@ var AddTask = function (_React$Component8) {
           "form",
           { onSubmit: this.handleAddTask },
           React.createElement("input", { type: "text", name: "task" }),
+          React.createElement("input", { type: "date", name: "date" }),
           React.createElement(
             "button",
             null,
@@ -526,8 +870,8 @@ var AddTask = function (_React$Component8) {
   return AddTask;
 }(React.Component);
 
-var User = function (_React$Component9) {
-  _inherits(User, _React$Component9);
+var User = function (_React$Component12) {
+  _inherits(User, _React$Component12);
 
   function User() {
     _classCallCheck(this, User);
@@ -558,8 +902,8 @@ var User = function (_React$Component9) {
   return User;
 }(React.Component);
 
-var Gold = function (_React$Component10) {
-  _inherits(Gold, _React$Component10);
+var Gold = function (_React$Component13) {
+  _inherits(Gold, _React$Component13);
 
   function Gold() {
     _classCallCheck(this, Gold);
