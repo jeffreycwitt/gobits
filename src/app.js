@@ -153,7 +153,8 @@ class GoBitsApp extends React.Component {
   changeFocusedCategory(index){
     this.setState(() => {
       return {
-        focusedCategory: index
+        focusedCategory: index,
+        focusedGoal: null
       }
     });
     this.setSubtitle();
@@ -179,7 +180,8 @@ class GoBitsApp extends React.Component {
       return {
         categories: prevState.categories.concat({id: category, title: category}),
         goldAmount: prevState.goldAmount + 1,
-        focusedCategory: category
+        focusedCategory: category,
+        focusedGoal: null
       }
     });
     this.setSubtitle();

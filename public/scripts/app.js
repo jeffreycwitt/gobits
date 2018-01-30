@@ -138,7 +138,8 @@ var GoBitsApp = function (_React$Component) {
     value: function changeFocusedCategory(index) {
       this.setState(function () {
         return {
-          focusedCategory: index
+          focusedCategory: index,
+          focusedGoal: null
         };
       });
       this.setSubtitle();
@@ -168,7 +169,8 @@ var GoBitsApp = function (_React$Component) {
         return {
           categories: prevState.categories.concat({ id: category, title: category }),
           goldAmount: prevState.goldAmount + 1,
-          focusedCategory: category
+          focusedCategory: category,
+          focusedGoal: null
         };
       });
       this.setSubtitle();
