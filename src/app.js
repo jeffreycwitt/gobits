@@ -352,7 +352,9 @@ class GoBitsApp extends React.Component {
       };
     return(
       <div>
-      <FocusedGoal goal={this.state.goals.filter(g => g.id === this.state.focusedGoal)[0]}/>
+      {
+        //<FocusedGoal goal={this.state.goals.filter(g => g.id === this.state.focusedGoal)[0]}/>
+      }
       {loadTasks()}
       <AddTask
         goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask}/>
@@ -365,7 +367,7 @@ class GoBitsApp extends React.Component {
       return (
         <div>
           <Goals
-            goals={this.filteredGoals()} category={this.state.focusedCategory} changeFocusedGoal={this.changeFocusedGoal} handleDeleteGoal={this.handleDeleteGoal}/>
+            goals={this.filteredGoals()} focusedGoal={this.state.focusedGoal} category={this.state.focusedCategory} changeFocusedGoal={this.changeFocusedGoal} handleDeleteGoal={this.handleDeleteGoal}/>
           <AddGoal
             category={this.state.focusedCategory}
             handleAddGoal={this.handleAddGoal} />
@@ -382,15 +384,20 @@ render(){
         <hr/>
         <User user={this.state.user}/>
         <hr/>
-        <Categories
-          categories={this.state.categories} changeFocusedCategory={this.changeFocusedCategory} handleDeleteCategory={this.handleDeleteCategory}/>
-        <AddCategory
-          handleAddCategory={this.handleAddCategory}/>
-        <hr/>
-        {this.displayGoals()}
-        <hr/>
-        {this.displayTasks()}
-
+        <div className="row">
+          <div className="col-sm-4">
+            <Categories
+              focusedCategory={this.state.focusedCategory} categories={this.state.categories} changeFocusedCategory={this.changeFocusedCategory} handleDeleteCategory={this.handleDeleteCategory}/>
+            <AddCategory
+              handleAddCategory={this.handleAddCategory}/>
+          </div>
+          <div className="col-sm-4">
+            {this.displayGoals()}
+          </div>
+          <div className="col-sm-4">
+            {this.displayTasks()}
+          </div>
+        </div>
         <Gold
           goldAmount={this.state.goldAmount}/>
       </div>
@@ -415,10 +422,11 @@ class Goals extends React.Component {
   render(){
     return (
       <div>
-        <h2>Goals for {this.props.category}</h2>
+        <h2>Go(als)</h2>
         {this.props.goals.map((o,i) => { return <Goal
           key={i}
           goal={o}
+          focusedGoal={this.props.focusedGoal}
           changeFocusedGoal={this.props.changeFocusedGoal}
           handleDeleteGoal={this.props.handleDeleteGoal}
         />})}
@@ -435,9 +443,15 @@ class Goal extends React.Component {
   changeFocusedGoal(){
     this.props.changeFocusedGoal(this.props.goal.id)
   }
+  addClassNames(){
+    let classNameArray = []
+    classNameArray.push(!this.props.goal.completed ? "notCompleted" : "completed");
+    classNameArray.push(this.props.goal.id === this.props.focusedGoal ? "selected" : null);
+    return classNameArray.join(' ');
+  }
   render(){
     return (
-      <li className={!this.props.goal.completed ? "notCompleted" : "completed"}>
+      <li className={this.addClassNames()}>
         <a onClick={this.changeFocusedGoal}>{this.props.goal.title} by {this.props.goal.date}</a>
       <span className="fa fa-trash"
         onClick={(e) => {
@@ -493,6 +507,7 @@ class Categories extends React.Component {
         {this.props.categories.map((c,i) => { return <Category
           key={i}
           category={c}
+          focusedCategory={this.props.focusedCategory}
           changeFocusedCategory={this.props.changeFocusedCategory}
           handleDeleteCategory={this.props.handleDeleteCategory}
         />})}
@@ -512,7 +527,7 @@ class Category extends React.Component {
   }
   render(){
     return (
-      <li><a onClick={this.changeFocusedCategory}>{this.props.category.title}</a>
+      <li className={this.props.category.id === this.props.focusedCategory ? "selected" : null}><a onClick={this.changeFocusedCategory}>{this.props.category.title}</a>
         <span className="fa fa-trash"
           onClick={(e) => {
             this.props.handleDeleteCategory(this.props.category.id);
@@ -556,13 +571,13 @@ class AddCategory extends React.Component {
 }
 
 
-class FocusedGoal extends React.Component {
-  render(){
-    return (
-      <h2>Tasks for {this.props.goal.title}</h2>
-    );
-  }
-}
+// class FocusedGoal extends React.Component {
+//   render(){
+//     return (
+//       <h2>(Ha)bits for {this.props.goal.title}</h2>
+//     );
+//   }
+// }
 
 
 
@@ -570,6 +585,7 @@ class Tasks extends React.Component {
   render(){
     return (
       <div>
+        <h2>(Ha)bits</h2>
         {this.props.tasks && this.props.tasks.map((t, i) => { return <Task
           key={t.title}
           task={t}

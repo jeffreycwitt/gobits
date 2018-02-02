@@ -386,9 +386,6 @@ var GoBitsApp = function (_React$Component) {
         return React.createElement(
           "div",
           null,
-          React.createElement(FocusedGoal, { goal: this.state.goals.filter(function (g) {
-              return g.id === _this6.state.focusedGoal;
-            })[0] }),
           loadTasks(),
           React.createElement(AddTask, {
             goalIndex: this.state.focusedGoal, handleAddTask: this.handleAddTask })
@@ -403,7 +400,7 @@ var GoBitsApp = function (_React$Component) {
           "div",
           null,
           React.createElement(Goals, {
-            goals: this.filteredGoals(), category: this.state.focusedCategory, changeFocusedGoal: this.changeFocusedGoal, handleDeleteGoal: this.handleDeleteGoal }),
+            goals: this.filteredGoals(), focusedGoal: this.state.focusedGoal, category: this.state.focusedCategory, changeFocusedGoal: this.changeFocusedGoal, handleDeleteGoal: this.handleDeleteGoal }),
           React.createElement(AddGoal, {
             category: this.state.focusedCategory,
             handleAddGoal: this.handleAddGoal })
@@ -421,14 +418,28 @@ var GoBitsApp = function (_React$Component) {
         React.createElement("hr", null),
         React.createElement(User, { user: this.state.user }),
         React.createElement("hr", null),
-        React.createElement(Categories, {
-          categories: this.state.categories, changeFocusedCategory: this.changeFocusedCategory, handleDeleteCategory: this.handleDeleteCategory }),
-        React.createElement(AddCategory, {
-          handleAddCategory: this.handleAddCategory }),
-        React.createElement("hr", null),
-        this.displayGoals(),
-        React.createElement("hr", null),
-        this.displayTasks(),
+        React.createElement(
+          "div",
+          { className: "row" },
+          React.createElement(
+            "div",
+            { className: "col-sm-4" },
+            React.createElement(Categories, {
+              focusedCategory: this.state.focusedCategory, categories: this.state.categories, changeFocusedCategory: this.changeFocusedCategory, handleDeleteCategory: this.handleDeleteCategory }),
+            React.createElement(AddCategory, {
+              handleAddCategory: this.handleAddCategory })
+          ),
+          React.createElement(
+            "div",
+            { className: "col-sm-4" },
+            this.displayGoals()
+          ),
+          React.createElement(
+            "div",
+            { className: "col-sm-4" },
+            this.displayTasks()
+          )
+        ),
         React.createElement(Gold, {
           goldAmount: this.state.goldAmount })
       );
@@ -493,13 +504,13 @@ var Goals = function (_React$Component3) {
         React.createElement(
           "h2",
           null,
-          "Goals for ",
-          this.props.category
+          "Go(als)"
         ),
         this.props.goals.map(function (o, i) {
           return React.createElement(Goal, {
             key: i,
             goal: o,
+            focusedGoal: _this9.props.focusedGoal,
             changeFocusedGoal: _this9.props.changeFocusedGoal,
             handleDeleteGoal: _this9.props.handleDeleteGoal
           });
@@ -529,13 +540,21 @@ var Goal = function (_React$Component4) {
       this.props.changeFocusedGoal(this.props.goal.id);
     }
   }, {
+    key: "addClassNames",
+    value: function addClassNames() {
+      var classNameArray = [];
+      classNameArray.push(!this.props.goal.completed ? "notCompleted" : "completed");
+      classNameArray.push(this.props.goal.id === this.props.focusedGoal ? "selected" : null);
+      return classNameArray.join(' ');
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this11 = this;
 
       return React.createElement(
         "li",
-        { className: !this.props.goal.completed ? "notCompleted" : "completed" },
+        { className: this.addClassNames() },
         React.createElement(
           "a",
           { onClick: this.changeFocusedGoal },
@@ -645,6 +664,7 @@ var Categories = function (_React$Component6) {
             return React.createElement(Category, {
               key: i,
               category: c,
+              focusedCategory: _this14.props.focusedCategory,
               changeFocusedCategory: _this14.props.changeFocusedCategory,
               handleDeleteCategory: _this14.props.handleDeleteCategory
             });
@@ -681,7 +701,7 @@ var Category = function (_React$Component7) {
 
       return React.createElement(
         "li",
-        null,
+        { className: this.props.category.id === this.props.focusedCategory ? "selected" : null },
         React.createElement(
           "a",
           { onClick: this.changeFocusedCategory },
@@ -755,32 +775,17 @@ var AddCategory = function (_React$Component8) {
   return AddCategory;
 }(React.Component);
 
-var FocusedGoal = function (_React$Component9) {
-  _inherits(FocusedGoal, _React$Component9);
+// class FocusedGoal extends React.Component {
+//   render(){
+//     return (
+//       <h2>(Ha)bits for {this.props.goal.title}</h2>
+//     );
+//   }
+// }
 
-  function FocusedGoal() {
-    _classCallCheck(this, FocusedGoal);
 
-    return _possibleConstructorReturn(this, (FocusedGoal.__proto__ || Object.getPrototypeOf(FocusedGoal)).apply(this, arguments));
-  }
-
-  _createClass(FocusedGoal, [{
-    key: "render",
-    value: function render() {
-      return React.createElement(
-        "h2",
-        null,
-        "Tasks for ",
-        this.props.goal.title
-      );
-    }
-  }]);
-
-  return FocusedGoal;
-}(React.Component);
-
-var Tasks = function (_React$Component10) {
-  _inherits(Tasks, _React$Component10);
+var Tasks = function (_React$Component9) {
+  _inherits(Tasks, _React$Component9);
 
   function Tasks() {
     _classCallCheck(this, Tasks);
@@ -791,19 +796,24 @@ var Tasks = function (_React$Component10) {
   _createClass(Tasks, [{
     key: "render",
     value: function render() {
-      var _this20 = this;
+      var _this19 = this;
 
       return React.createElement(
         "div",
         null,
+        React.createElement(
+          "h2",
+          null,
+          "(Ha)bits"
+        ),
         this.props.tasks && this.props.tasks.map(function (t, i) {
           return React.createElement(Task, {
             key: t.title,
             task: t,
             index: t.id,
-            goalIndex: _this20.props.goalIndex,
-            handleCheck: _this20.props.handleCheck,
-            handleDeleteTask: _this20.props.handleDeleteTask });
+            goalIndex: _this19.props.goalIndex,
+            handleCheck: _this19.props.handleCheck,
+            handleDeleteTask: _this19.props.handleDeleteTask });
         })
       );
     }
@@ -833,19 +843,19 @@ var Task = function Task(props) {
   );
 };
 
-var AddTask = function (_React$Component11) {
-  _inherits(AddTask, _React$Component11);
+var AddTask = function (_React$Component10) {
+  _inherits(AddTask, _React$Component10);
 
   function AddTask(props) {
     _classCallCheck(this, AddTask);
 
-    var _this21 = _possibleConstructorReturn(this, (AddTask.__proto__ || Object.getPrototypeOf(AddTask)).call(this, props));
+    var _this20 = _possibleConstructorReturn(this, (AddTask.__proto__ || Object.getPrototypeOf(AddTask)).call(this, props));
 
-    _this21.handleAddTask = _this21.handleAddTask.bind(_this21);
-    _this21.state = {
+    _this20.handleAddTask = _this20.handleAddTask.bind(_this20);
+    _this20.state = {
       error: undefined
     };
-    return _this21;
+    return _this20;
   }
 
   _createClass(AddTask, [{
@@ -891,8 +901,8 @@ var AddTask = function (_React$Component11) {
   return AddTask;
 }(React.Component);
 
-var User = function (_React$Component12) {
-  _inherits(User, _React$Component12);
+var User = function (_React$Component11) {
+  _inherits(User, _React$Component11);
 
   function User() {
     _classCallCheck(this, User);
@@ -921,8 +931,8 @@ var User = function (_React$Component12) {
   return User;
 }(React.Component);
 
-var Gold = function (_React$Component13) {
-  _inherits(Gold, _React$Component13);
+var Gold = function (_React$Component12) {
+  _inherits(Gold, _React$Component12);
 
   function Gold() {
     _classCallCheck(this, Gold);
