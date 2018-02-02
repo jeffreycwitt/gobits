@@ -131,6 +131,26 @@ class GoBitsApp extends React.Component {
     }
     this.state = emptyState;
   }
+  componentDidMount(){
+    // try to load data from local storage
+    try {
+      const state = JSON.parse(localStorage.getItem("gobitsState"));
+      //only load state if state is not empty
+      if (state){
+          this.setState(() => (state));
+        }
+    }
+    // if local storage fails do nothing and proceed with the default state
+    catch (e) {
+
+
+    }
+
+  }
+  componentDidUpdate(){
+    localStorage.setItem("gobitsState", JSON.stringify(this.state))
+
+  }
   setSubtitle(){
     const randomNum = Math.floor(Math.random() * this.state.messages.length)
     const message = this.state.messages[randomNum];
@@ -266,7 +286,6 @@ class GoBitsApp extends React.Component {
           return true
         }
       });
-      console.log("index", index);
       prevStateCopy.goals.splice(index, 1);
       return {
         goals: prevStateCopy.goals,
@@ -295,7 +314,6 @@ class GoBitsApp extends React.Component {
           return true
         }
       });
-      console.log(index)
       prevStateCopy.categories.splice(index, 1);
       return {
         categories: prevStateCopy.categories,
@@ -358,7 +376,6 @@ class GoBitsApp extends React.Component {
 
 render(){
     const title = "Gobits";
-    console.log(this.state)
     return (
       <div>
         <Header title={title} subtitle={this.state.subtitle}/>
@@ -448,6 +465,9 @@ class AddGoal extends React.Component {
     this.setState(() => {
       return { error };
     });
+    if (!error){
+      e.target.elements.goal.value = '';
+    };
   }
   render(){
     return (
@@ -518,6 +538,9 @@ class AddCategory extends React.Component {
     this.setState(() => {
       return { error };
     });
+    if (!error){
+      e.target.elements.category.value = '';
+    };
   }
   render(){
     return (
@@ -594,6 +617,9 @@ class AddTask extends React.Component {
     this.setState(() => {
       return { error };
     });
+    if (!error){
+      e.target.elements.task.value = '';
+    };
   }
   render(){
     return (

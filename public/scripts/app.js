@@ -113,6 +113,27 @@ var GoBitsApp = function (_React$Component) {
   }
 
   _createClass(GoBitsApp, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      // try to load data from local storage
+      try {
+        var state = JSON.parse(localStorage.getItem("gobitsState"));
+        //only load state if state is not empty
+        if (state) {
+          this.setState(function () {
+            return state;
+          });
+        }
+      }
+      // if local storage fails do nothing and proceed with the default state
+      catch (e) {}
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate() {
+      localStorage.setItem("gobitsState", JSON.stringify(this.state));
+    }
+  }, {
     key: "setSubtitle",
     value: function setSubtitle() {
       var randomNum = Math.floor(Math.random() * this.state.messages.length);
@@ -289,7 +310,6 @@ var GoBitsApp = function (_React$Component) {
             return true;
           }
         });
-        console.log("index", index);
         prevStateCopy.goals.splice(index, 1);
         return {
           goals: prevStateCopy.goals,
@@ -319,7 +339,6 @@ var GoBitsApp = function (_React$Component) {
             return true;
           }
         });
-        console.log(index);
         prevStateCopy.categories.splice(index, 1);
         return {
           categories: prevStateCopy.categories,
@@ -395,7 +414,6 @@ var GoBitsApp = function (_React$Component) {
     key: "render",
     value: function render() {
       var title = "Gobits";
-      console.log(this.state);
       return React.createElement(
         "div",
         null,
@@ -562,6 +580,9 @@ var AddGoal = function (_React$Component5) {
       this.setState(function () {
         return { error: error };
       });
+      if (!error) {
+        e.target.elements.goal.value = '';
+      };
     }
   }, {
     key: "render",
@@ -702,6 +723,9 @@ var AddCategory = function (_React$Component8) {
       this.setState(function () {
         return { error: error };
       });
+      if (!error) {
+        e.target.elements.category.value = '';
+      };
     }
   }, {
     key: "render",
@@ -834,6 +858,9 @@ var AddTask = function (_React$Component11) {
       this.setState(function () {
         return { error: error };
       });
+      if (!error) {
+        e.target.elements.task.value = '';
+      };
     }
   }, {
     key: "render",
