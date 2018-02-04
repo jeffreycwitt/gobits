@@ -22,7 +22,7 @@ const path = require('path')
 var app = express();
 const PORT = process.env.PORT || 3000;
 
-
+// HEROKU Doesn't seem to work without this https redirect
 app.use(function(req, res, next){
 	if (req.headers['x-forwarded-proto'] === 'https'){
 		res.redirect('http://' + req.hostname + req.url);

@@ -2,17 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import GoBitsApp from './components/GoBitsApp';
 import Landing from './components/Landing';
-import {BrowserRouter, Route} from 'react-router-dom';
+import {BrowserRouter, HashRouter, Route} from 'react-router-dom';
 
 //ReactDOM.render(<GoBitsApp/>, document.getElementById('app'))
 
 const routes = (
-  <BrowserRouter>
+  <HashRouter>
     <div>
       <Route path="/" component={Landing} exact={true}/>
       <Route path="/me" component={GoBitsApp} exact={true}/>
     </div>
-  </BrowserRouter>
+  </HashRouter>
 )
 
 ReactDOM.render(routes, document.getElementById('app')

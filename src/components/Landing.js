@@ -34,7 +34,7 @@ export default class Landing extends React.Component {
             <span id="goalHop">{this.state.goals[this.state.currentGoalIndex]}</span>
           </p>
           <div className="center-btn">
-            <a className="lets-gobit-btn" href="/me">let's gobit!</a>
+            <a className="lets-gobit-btn" href="#me">let's gobit!</a>
           </div>
         </div>
 
