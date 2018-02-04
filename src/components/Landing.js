@@ -24,7 +24,7 @@ export default class Landing extends React.Component {
     setInterval(() => {
       this.setState({currentGoalIndex: this.getNewIndex()})
       console.log(this.state)
-    }, 2000)
+    }, 1000)
   }
   render(){
     return (
