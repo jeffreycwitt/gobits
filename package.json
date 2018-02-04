@@ -16,7 +16,6 @@
     "babel-preset-env": "1.5.2",
     "babel-preset-react": "6.24.1",
     "express": "^4.16.2",
-    "live-server": "^1.2.0",
     "moment": "^2.20.1",
     "react": "16.0.0",
     "react-dom": "16.0.0",
