@@ -9,8 +9,8 @@ import {BrowserRouter, Route} from 'react-router-dom';
 const routes = (
   <BrowserRouter>
     <div>
-      <Route path="/" component={Landing} exact={true}/>
-      <Route path="/me" component={GoBitsApp} exact={true}/>
+      <Route path="/me" component={Landing} exact={true}/>
+      <Route path="/" component={GoBitsApp} exact={true}/>
     </div>
   </BrowserRouter>
 )
