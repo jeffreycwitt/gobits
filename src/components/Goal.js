@@ -10,7 +10,7 @@ export default class Goal extends React.Component {
   }
   addClassNames(){
     let classNameArray = []
-    classNameArray.push(!this.props.goal.completed ? "notCompleted" : "completed");
+    classNameArray.push(!this.props.goal.completedAt ? "notCompleted" : "completed");
     classNameArray.push(this.props.goal.id === this.props.focusedGoal ? "selected" : null);
     return classNameArray.join(' ');
   }

@@ -7,7 +7,7 @@ export default class Categories extends React.Component {
         <h2>Categories</h2>
         <ul>
         {this.props.categories.map((c,i) => { return <Category
-          key={i}
+          key={c.id}
           category={c}
           focusedCategory={this.props.focusedCategory}
           changeFocusedCategory={this.props.changeFocusedCategory}

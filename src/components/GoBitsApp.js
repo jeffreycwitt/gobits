@@ -1,5 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import moment from 'moment'
+import uuidv4 from 'uuid/v4'
+
 import Gold from './Gold'
 import User from './User'
 import AddTask from './AddTask'
@@ -97,19 +100,19 @@ export default class GoBitsApp extends React.Component {
           title: "get new job",
           category: "job",
           date: "June, 2016",
-          completed: false,
+          completedAt: false,
           tasks: [
             {
               id: "createresume",
               title: "create resume",
               date: "today",
-              completed: false
+              completedAt: false
             },
             {
               id: "sendoutresume",
               title: "send out resume",
               date: "week",
-              completed: false
+              completedAt: false
             }
           ]
         },
@@ -118,19 +121,19 @@ export default class GoBitsApp extends React.Component {
           title: "make new friend",
           category: "social",
           date: "May, 2016",
-          completed: false,
+          completedAt: false,
           tasks: [
             {
               "id": "gotoparty",
               title: "go to party",
               date: "today",
-              completed: false
+              completedAt: false
             },
             {
               "id": "startmeetupgroup",
               title: "start meet up group",
               date: "week",
-              completed: false
+              completedAt: false
             }
           ]
         }
@@ -196,10 +199,21 @@ export default class GoBitsApp extends React.Component {
       return 'Enter valid value to add item';
     }
     this.setState((prevState) => {
+      const goalId = uuidv4();
       return {
-        goals: prevState.goals.concat({id: goal, title: goal, category: category, date: date, completed: false, tasks: []}),
+        goals: prevState.goals.concat(
+          {
+            id: goalId,
+            title: goal,
+            category: category,
+            date: date,
+            completedAt: false,
+            createdAt: moment().format(),
+            tasks: []
+          }
+        ),
         goldAmount: prevState.goldAmount + 1,
-        focusedGoal: goal
+        focusedGoal: goalId
       }
     });
     this.setSubtitle();
@@ -209,10 +223,17 @@ export default class GoBitsApp extends React.Component {
       return 'Enter valid value to add item';
     }
     this.setState((prevState) => {
+      const categoryId = uuidv4();
       return {
-        categories: prevState.categories.concat({id: category, title: category}),
+        categories: prevState.categories.concat(
+          {
+            id: categoryId,
+            title: category,
+            createdAt: moment().format()
+          }
+        ),
         goldAmount: prevState.goldAmount + 1,
-        focusedCategory: category,
+        focusedCategory: categoryId,
         focusedGoal: null
       }
     });
@@ -227,11 +248,19 @@ export default class GoBitsApp extends React.Component {
       //const updatedTasks = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.concat({title: task, date: date, completed: false})
       const prevStateCopy = prevState
       let goal = prevStateCopy.goals.filter(g => g.id === goalIndex)[0]
-      let updatedTasks = goal.tasks.concat({id: task, title: task, date: date, completed: false})
+      let updatedTasks = goal.tasks.concat(
+        {
+          id: uuidv4(),
+          title: task,
+          date: date,
+          completedAt: false,
+          createdAt: moment().format()
+        }
+      )
       goal.tasks = updatedTasks
 
       const goalStatus = this.setGoalStatus(goal)
-      goal.completed = goalStatus;
+      goal.completedAt = goalStatus;
 
       return {
         goals: prevStateCopy.goals,
@@ -241,10 +270,10 @@ export default class GoBitsApp extends React.Component {
     this.setSubtitle();
   }
   setGoalStatus(goal){
-    let goalStatus = true
+    let goalStatus = moment().format();
     if (goal.tasks.length > 0) {
       goal.tasks.forEach((t) =>{
-        if (t.completed === false){
+        if (t.completedAt === false){
           goalStatus = false
         }
       });
@@ -257,12 +286,12 @@ export default class GoBitsApp extends React.Component {
   handleCheck(taskIndex, goalIndex){
 
     this.setState((prevState) => {
-      const currentValue = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completed
+      const currentValue = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completedAt
       const prevStateCopy = prevState
-      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completed = !currentValue
+      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completedAt = !currentValue ? moment().format() : false
 
       const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalIndex)[0])
-      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].completed = goalStatus;
+      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].completedAt = goalStatus;
 
       return {
         goals: prevStateCopy.goals,
@@ -286,7 +315,7 @@ export default class GoBitsApp extends React.Component {
       // set goal status
 
       const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalIndex)[0])
-      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].completed = goalStatus;
+      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].completedAt = goalStatus;
 
       return {
         goals: prevStateCopy.goals,
@@ -354,7 +383,6 @@ export default class GoBitsApp extends React.Component {
   }
   filteredGoals(){
     if (this.state.focusedCategory){
-
       const newGoals = this.state.goals.filter((g, i) => {
         if (g.category === this.state.focusedCategory){
           return g
@@ -366,29 +394,40 @@ export default class GoBitsApp extends React.Component {
       return this.state.goals
     }
   }
+  filteredTasks(){
+    if (this.state.focusedGoal){
+      const currentGoal = this.state.goals.filter((g, i) => {
+        if (g.id === this.state.focusedGoal){
+          return g
+        }
+      });
+      if (currentGoal.length > 0) {
+        return currentGoal[0].tasks
+      }
+      else {
+        return []
+      }
+    }
+    else{
+      const allTasks = this.state.goals.map(() => {
+        return g.tasks
+      });
+      return [].concat.apply([], allTasks)
+    }
+  }
   displayTasks(){
     if (this.state.focusedGoal){
-      const loadTasks = () => {
-        if (this.state.goals.filter(g => g.id === this.state.focusedGoal)[0]){
-          return(
-          <Tasks
-            tasks={this.state.goals.filter(g => g.id === this.state.focusedGoal)[0].tasks}
-            goalIndex={this.state.focusedGoal}
-            handleCheck={this.handleCheck}
-            handleDeleteTask={this.handleDeleteTask}/>
-            )
-        }
-      };
-    return(
-      <div>
-      {
-        //<FocusedGoal goal={this.state.goals.filter(g => g.id === this.state.focusedGoal)[0]}/>
-      }
-      {loadTasks()}
-      <AddTask
-        goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask}/>
-      </div>
-    )
+      return(
+        <div>
+            <Tasks
+              tasks={this.filteredTasks()}
+              goalIndex={this.state.focusedGoal}
+              handleCheck={this.handleCheck}
+              handleDeleteTask={this.handleDeleteTask}/>
+            <AddTask
+              goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask}/>
+        </div>
+      )
     }
   }
   displayGoals(){
@@ -407,6 +446,7 @@ export default class GoBitsApp extends React.Component {
 
 render(){
     const title = "Gobits";
+    console.log("state at render", this.state)
     return (
       <div>
         <Header title={title} subtitle={this.state.subtitle}/>

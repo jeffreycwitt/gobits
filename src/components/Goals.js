@@ -7,7 +7,7 @@ export default class Goals extends React.Component {
       <div>
         <h2>Go(als)</h2>
         {this.props.goals.map((o,i) => { return <Goal
-          key={i}
+          key={o.id}
           goal={o}
           focusedGoal={this.props.focusedGoal}
           changeFocusedGoal={this.props.changeFocusedGoal}
