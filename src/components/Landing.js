@@ -4,6 +4,8 @@ export default class Landing extends React.Component {
   constructor(props){
     super(props)
     this.getNewIndex = this.getNewIndex.bind(this);
+    this.timer = this.timer.bind(this);
+
     this.state = {
       goals: [
         "be a gobit!",
@@ -16,15 +18,20 @@ export default class Landing extends React.Component {
     };
 
   }
+  timer(){
+    this.setState({currentGoalIndex: this.getNewIndex()});
+  }
   getNewIndex(){
     const randomNum = Math.floor(Math.random() * this.state.goals.length)
     return randomNum
   }
   componentDidMount(){
-    setInterval(() => {
-      this.setState({currentGoalIndex: this.getNewIndex()})
-      console.log(this.state)
-    }, 1000)
+    var intervalId = setInterval(this.timer, 1000);
+    // store intervalId in the state so it can be accessed later:
+    this.setState({intervalId: intervalId});
+  }
+  componentWillUnmount(){
+    clearInterval(this.state.intervalId);
   }
   render(){
     return (
