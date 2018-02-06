@@ -11,11 +11,11 @@ export default class Category extends React.Component {
   render(){
     return (
       <li className={this.props.category.id === this.props.focusedCategory ? "selected" : null}><a onClick={this.changeFocusedCategory}>{this.props.category.title}</a>
-        <span className="fa fa-trash"
+        {this.props.category.id !== 'uncategorized' && <span className="fa fa-trash"
           onClick={(e) => {
             this.props.handleDeleteCategory(this.props.category.id);
           }}
-        />
+        />}
       </li>
     );
   }

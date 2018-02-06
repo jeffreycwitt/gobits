@@ -18,11 +18,11 @@ export default class Goal extends React.Component {
     return (
       <li className={this.addClassNames()}>
         <a onClick={this.changeFocusedGoal}>{this.props.goal.title} by {this.props.goal.date}</a>
-      <span className="fa fa-trash"
+      {this.props.goal.id !== 'uncategorized' && <span className="fa fa-trash"
         onClick={(e) => {
           this.props.handleDeleteGoal(this.props.goal.id);
         }}
-      />
+      />}
       </li>
     );
   }
