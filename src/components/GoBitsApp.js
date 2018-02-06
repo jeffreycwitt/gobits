@@ -12,6 +12,8 @@ import Categories from './Categories'
 import AddGoal from './AddGoal'
 import Goals from './Goals'
 import Header from './Header'
+import Today from './Today'
+import NavBar from './NavBar'
 
 export default class GoBitsApp extends React.Component {
   constructor(props){
@@ -23,13 +25,18 @@ export default class GoBitsApp extends React.Component {
     this.handleDeleteCategory = this.handleDeleteCategory.bind(this);
     this.handleAddTask = this.handleAddTask.bind(this);
     this.handleCheck = this.handleCheck.bind(this);
+    this.handleThumbsDown = this.handleThumbsDown.bind(this);
     this.handleDeleteTask = this.handleDeleteTask.bind(this);
     this.handleDeleteGoal = this.handleDeleteGoal.bind(this);
     this.setSubtitle = this.setSubtitle.bind(this);
     this.displayTasks = this.displayTasks.bind(this);
     this.filteredGoals = this.filteredGoals.bind(this);
+    this.displayDashboard = this.displayDashboard.bind(this);
+    this.displayToday = this.displayToday.bind(this);
+    this.handleChangeView = this.handleChangeView.bind(this);
     const emptyState =  {
       subtitle: "Get your life together",
+      display: "today",
       messages: [
         "Get your life together",
         "Aren't you better than this?",
@@ -43,8 +50,18 @@ export default class GoBitsApp extends React.Component {
       focusedGoal: null,
       focusedCategory: null,
       categories: [
+        {
+          id: "uncategorized",
+          title: "Uncategorized"
+        }
       ],
       goals: [
+        {
+          id: "uncategorized",
+          title: "Uncategorized",
+          category: "uncategorized",
+          tasks: []
+        }
       ],
       user: {
         name: "John Doe",
@@ -56,6 +73,7 @@ export default class GoBitsApp extends React.Component {
 
     const testState =  {
       subtitle: "Get your life together",
+      display: "today",
       messages: [
         "Get your life together",
         "Aren't you better than this?",
@@ -243,7 +261,12 @@ export default class GoBitsApp extends React.Component {
     if (!task){
       return 'Enter valid value to add item';
     }
-
+    if (!goalIndex){
+      goalIndex = "uncategorized"
+    }
+    if (date === "today"){
+      date = moment().format("YYYY-MM-DD")
+    }
     this.setState((prevState) => {
       //const updatedTasks = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.concat({title: task, date: date, completed: false})
       const prevStateCopy = prevState
@@ -254,7 +277,8 @@ export default class GoBitsApp extends React.Component {
           title: task,
           date: date,
           completedAt: false,
-          createdAt: moment().format()
+          createdAt: moment().format(),
+          rejectedCount: 0
         }
       )
       goal.tasks = updatedTasks
@@ -289,6 +313,23 @@ export default class GoBitsApp extends React.Component {
       const currentValue = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completedAt
       const prevStateCopy = prevState
       prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completedAt = !currentValue ? moment().format() : false
+
+      const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalIndex)[0])
+      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].completedAt = goalStatus;
+
+      return {
+        goals: prevStateCopy.goals,
+        goldAmount: prevState.goldAmount + 1
+      }
+    });
+    this.setSubtitle();
+  }
+  handleThumbsDown(taskIndex, goalIndex){
+    console.log("Test")
+    this.setState((prevState) => {
+      const currentValue = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].rejectedCount
+      const prevStateCopy = prevState
+      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].rejectedCount = currentValue + 1
 
       const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalIndex)[0])
       prevStateCopy.goals.filter(g => g.id === goalIndex)[0].completedAt = goalStatus;
@@ -409,11 +450,23 @@ export default class GoBitsApp extends React.Component {
       }
     }
     else{
-      const allTasks = this.state.goals.map(() => {
+      const allTasks = this.state.goals.map((g) => {
         return g.tasks
       });
       return [].concat.apply([], allTasks)
     }
+  }
+  filteredTodaysTasks(){
+    const allTasks = this.state.goals.map((g) => {
+      let tasks = []
+       g.tasks.forEach((t) => {
+        if (t.date === moment().format("YYYY-MM-DD")){
+          tasks.push(t)
+        }
+      });
+      return tasks
+    });
+    return [].concat.apply([], allTasks)
   }
   displayTasks(){
     if (this.state.focusedGoal){
@@ -423,7 +476,8 @@ export default class GoBitsApp extends React.Component {
               tasks={this.filteredTasks()}
               goalIndex={this.state.focusedGoal}
               handleCheck={this.handleCheck}
-              handleDeleteTask={this.handleDeleteTask}/>
+              handleDeleteTask={this.handleDeleteTask}
+              handleThumbsDown={this.handleThumbsDown}/>
             <AddTask
               goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask}/>
         </div>
@@ -443,30 +497,64 @@ export default class GoBitsApp extends React.Component {
       )
     }
   }
+  displayDashboard(){
+    return(
+      <div className="row">
+        <div className="col-sm-4">
+          <Categories
+            focusedCategory={this.state.focusedCategory} categories={this.state.categories} changeFocusedCategory={this.changeFocusedCategory} handleDeleteCategory={this.handleDeleteCategory}/>
+          <AddCategory
+            handleAddCategory={this.handleAddCategory}/>
+        </div>
+        <div className="col-sm-4">
+          {this.displayGoals()}
+        </div>
+        <div className="col-sm-4">
+          {this.displayTasks()}
+        </div>
+      </div>
+    )
+  }
+  displayToday(){
+
+    return(
+      <div>
+        <Today
+          tasks={this.filteredTodaysTasks()}
+          goalIndex={this.state.focusedGoal}
+          handleCheck={this.handleCheck}
+          handleDeleteTask={this.handleDeleteTask}
+          handleThumbsDown={this.handleThumbsDown}
+        />
+          <AddTask
+            goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask} display={this.state.display}/>
+      </div>
+    )
+  }
+  handleChangeView(){
+    if (this.state.display === "dashboard"){
+      this.setState(() => {
+        return{display: "today"}
+        });
+      }
+    else {
+      this.setState(() => {
+        return{display: "dashboard"}
+      });
+    };
+  }
 
 render(){
     const title = "Gobits";
     console.log("state at render", this.state)
     return (
       <div>
-        <Header title={title} subtitle={this.state.subtitle}/>
+        <Header title={title} subtitle={this.state.subtitle} />
         <hr/>
         <User user={this.state.user}/>
+        <NavBar currentView={this.state.display} changeView={this.handleChangeView}/>
         <hr/>
-        <div className="row">
-          <div className="col-sm-4">
-            <Categories
-              focusedCategory={this.state.focusedCategory} categories={this.state.categories} changeFocusedCategory={this.changeFocusedCategory} handleDeleteCategory={this.handleDeleteCategory}/>
-            <AddCategory
-              handleAddCategory={this.handleAddCategory}/>
-          </div>
-          <div className="col-sm-4">
-            {this.displayGoals()}
-          </div>
-          <div className="col-sm-4">
-            {this.displayTasks()}
-          </div>
-        </div>
+        {this.state.display === "dashboard" ? this.displayDashboard() : this.displayToday()}
         <Gold
           goldAmount={this.state.goldAmount}/>
       </div>

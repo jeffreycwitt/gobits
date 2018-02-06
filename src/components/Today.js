@@ -1,7 +1,7 @@
 import React from 'react'
 import Task from './Task'
 
-export default class Tasks extends React.Component {
+export default class Today extends React.Component {
   render(){
     const displayTasks = () => {
       if (this.props.tasks){
@@ -13,8 +13,7 @@ export default class Tasks extends React.Component {
               goalIndex={this.props.goalIndex}
               handleCheck={this.props.handleCheck}
               handleDeleteTask={this.props.handleDeleteTask}
-              handleThumbsDown={this.props.handleThumbsDown}
-            />
+              handleThumbsDown={this.props.handleThumbsDown}/>
           );
       });
       return tasks
@@ -23,7 +22,7 @@ export default class Tasks extends React.Component {
 
     return (
       <div>
-        <h2>(Ha)bits</h2>
+        <h2>Today</h2>
         {displayTasks()}
       </div>
     );

@@ -10,7 +10,7 @@ export default class AddTask extends React.Component {
   }
   handleAddTask(e){
     e.preventDefault()
-    const date = e.target.elements.date.value;
+    const date = this.props.display === "today" ? "today" : e.target.elements.date.value;
     const task = e.target.elements.task.value.trim();
     const error = this.props.handleAddTask(task, date, this.props.goalIndex);
     this.setState(() => {
@@ -26,7 +26,7 @@ export default class AddTask extends React.Component {
         {this.state.error && <p>{this.state.error}</p>}
       <form onSubmit={this.handleAddTask}>
         <input type="text" name="task"/>
-        <input type="date" name="date"/>
+        {this.props.display !== "today"  && <input type="date" name="date"/>}
         <button><span className="fa fa-plus"/></button>
       </form>
       </div>
