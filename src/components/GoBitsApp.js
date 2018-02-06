@@ -34,9 +34,11 @@ export default class GoBitsApp extends React.Component {
     this.displayDashboard = this.displayDashboard.bind(this);
     this.displayToday = this.displayToday.bind(this);
     this.handleChangeView = this.handleChangeView.bind(this);
+    this.handleChangeFocusDate = this.handleChangeFocusDate.bind(this);
     const emptyState =  {
       subtitle: "Get your life together",
       display: "today",
+      focusedDate: null,
       messages: [
         "Get your life together",
         "Aren't you better than this?",
@@ -456,11 +458,15 @@ export default class GoBitsApp extends React.Component {
       return [].concat.apply([], allTasks)
     }
   }
-  filteredTodaysTasks(){
+  filteredTodaysTasks(date){
+    if (!date){
+      date = moment().format("YYYY-MM-DD")
+    }
+
     const allTasks = this.state.goals.map((g) => {
       let tasks = []
        g.tasks.forEach((t) => {
-        if (t.date === moment().format("YYYY-MM-DD")){
+        if (t.date === date){
           tasks.push(t)
         }
       });
@@ -515,16 +521,22 @@ export default class GoBitsApp extends React.Component {
       </div>
     )
   }
-  displayToday(){
-
+  handleChangeFocusDate(date){
+    this.setState(() => {
+      return{focusedDate: date}
+    });
+  }
+  displayToday(date){
     return(
       <div>
         <Today
-          tasks={this.filteredTodaysTasks()}
+          tasks={this.filteredTodaysTasks(this.state.focusedDate)}
           goalIndex={this.state.focusedGoal}
           handleCheck={this.handleCheck}
           handleDeleteTask={this.handleDeleteTask}
           handleThumbsDown={this.handleThumbsDown}
+          handleChangeFocusDate={this.handleChangeFocusDate}
+          focusedDate={this.state.focusedDate}
         />
           <AddTask
             goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask} display={this.state.display}/>
@@ -543,7 +555,6 @@ export default class GoBitsApp extends React.Component {
       });
     };
   }
-
 render(){
     const title = "Gobits";
     console.log("state at render", this.state)
