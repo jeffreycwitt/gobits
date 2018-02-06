@@ -539,7 +539,7 @@ export default class GoBitsApp extends React.Component {
           focusedDate={this.state.focusedDate}
         />
           <AddTask
-            goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask} display={this.state.display}/>
+            goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask} display={this.state.display} focusedDate={this.state.focusedDate}/>
       </div>
     )
   }

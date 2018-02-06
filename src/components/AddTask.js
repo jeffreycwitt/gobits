@@ -10,7 +10,8 @@ export default class AddTask extends React.Component {
   }
   handleAddTask(e){
     e.preventDefault()
-    const date = this.props.display === "today" ? "today" : e.target.elements.date.value;
+    const date = this.props.display === "today" ? this.props.focusedDate : e.target.elements.date.value;
+    console.log("date", date)
     const task = e.target.elements.task.value.trim();
     const error = this.props.handleAddTask(task, date, this.props.goalIndex);
     this.setState(() => {
