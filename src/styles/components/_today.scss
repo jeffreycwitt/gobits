@@ -1,0 +1,11 @@
+.today{
+  width: 60%;
+  margin: auto;
+}
+
+@media (max-width: $desktop-breakpoint){
+  .today {
+    width: $mobile-width;
+  }
+
+}

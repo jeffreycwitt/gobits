@@ -1,14 +1,10 @@
 import React from 'react'
 
 export default class AddCategory extends React.Component {
-  constructor(props){
-    super(props)
-    this.handleAddCategory = this.handleAddCategory.bind(this);
-    this.state = {
-      error: undefined
-    }
+  state = {
+    error: undefined
   }
-  handleAddCategory(e){
+  handleAddCategory = (e) => {
     e.preventDefault()
     const category = e.target.elements.category.value.trim();
     const error = this.props.handleAddCategory(category);

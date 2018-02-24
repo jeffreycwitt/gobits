@@ -1,0 +1,17 @@
+.navbar
+{
+  text-align: center;
+  width: $desktop-width; 
+  margin: auto;
+  display: block;
+  box-sizing: border-box;
+  line-height: 1.5;
+  padding: 16px 0;
+}
+
+@media (max-width: $desktop-breakpoint){
+  .navbar {
+    width: $mobile-width;
+  }
+
+}

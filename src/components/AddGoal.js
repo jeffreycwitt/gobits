@@ -1,14 +1,11 @@
 import React from 'react'
 
 export default class AddGoal extends React.Component {
-  constructor(props){
-    super(props)
-    this.handleAddGoal = this.handleAddGoal.bind(this);
-    this.state = {
-      error: undefined
-    }
+  state = {
+    error: undefined
   }
-  handleAddGoal(e){
+  
+  handleAddGoal = (e) => {
     e.preventDefault()
     const date = e.target.elements.date.value
     const goal = e.target.elements.goal.value.trim();

@@ -13,7 +13,7 @@ export default class NavBar extends React.Component {
     };
 
     return (
-      <button onClick={this.props.changeView}>View {viewChoice()}</button>
+      <button className="navbar" onClick={this.props.changeView}>View {viewChoice()}</button>
     );
   }
 }

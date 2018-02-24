@@ -1,0 +1,9 @@
+.dashboard{
+  width: $desktop-width;
+  margin: auto
+}
+@media (max-width: $desktop-breakpoint){
+  .dashboard {
+    width: $mobile-width;
+  }
+}

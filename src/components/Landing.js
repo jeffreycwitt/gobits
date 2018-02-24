@@ -1,30 +1,23 @@
 import React from 'react'
 
 export default class Landing extends React.Component {
-  constructor(props){
-    super(props)
-    this.getNewIndex = this.getNewIndex.bind(this);
-    this.timer = this.timer.bind(this);
-
-    this.state = {
-      goals: [
-        "be a gobit!",
-        "run a 10k.",
-        "call mom more.",
-        "get a promotion.",
-        "buy a house."
-      ],
-      currentGoalIndex: 0
-    };
-
-  }
-  timer(){
+  state = {
+    goals: [
+      "be a gobit!",
+      "run a 10k.",
+      "call mom more.",
+      "get a promotion.",
+      "buy a house."
+    ],
+    currentGoalIndex: 0
+  };
+  timer = () => {
     this.setState({currentGoalIndex: this.getNewIndex()});
-  }
-  getNewIndex(){
+  };
+  getNewIndex = () => {
     const randomNum = Math.floor(Math.random() * this.state.goals.length)
     return randomNum
-  }
+  };
   componentDidMount(){
     var intervalId = setInterval(this.timer, 1000);
     // store intervalId in the state so it can be accessed later:

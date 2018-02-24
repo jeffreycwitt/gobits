@@ -16,177 +16,138 @@ import Today from './Today'
 import NavBar from './NavBar'
 
 export default class GoBitsApp extends React.Component {
-  constructor(props){
-    super(props)
-    this.changeFocusedGoal = this.changeFocusedGoal.bind(this);
-    this.handleAddGoal = this.handleAddGoal.bind(this);
-    this.changeFocusedCategory = this.changeFocusedCategory.bind(this);
-    this.handleAddCategory = this.handleAddCategory.bind(this);
-    this.handleDeleteCategory = this.handleDeleteCategory.bind(this);
-    this.handleAddTask = this.handleAddTask.bind(this);
-    this.handleCheck = this.handleCheck.bind(this);
-    this.handleThumbsDown = this.handleThumbsDown.bind(this);
-    this.handleDeleteTask = this.handleDeleteTask.bind(this);
-    this.handleDeleteGoal = this.handleDeleteGoal.bind(this);
-    this.setSubtitle = this.setSubtitle.bind(this);
-    this.displayTasks = this.displayTasks.bind(this);
-    this.filteredGoals = this.filteredGoals.bind(this);
-    this.displayDashboard = this.displayDashboard.bind(this);
-    this.displayToday = this.displayToday.bind(this);
-    this.handleChangeView = this.handleChangeView.bind(this);
-    this.handleChangeFocusDate = this.handleChangeFocusDate.bind(this);
-    const emptyState =  {
-      subtitle: "Get your life together",
-      display: "today",
-      focusedDate: null,
-      messages: [
-        "Get your life together",
-        "Aren't you better than this?",
-        "Seriously, Aren't you better than this?",
-        "Life really isn't that hard; why are you having so much trouble",
-        "Other people don't need a to do list; they just do stuff",
-        "Get it together!",
-        "Stopping making to do lists and just do your work!",
-        "Why are you have so much trouble getting stuff done it?",
-      ],
-      focusedGoal: null,
-      focusedCategory: null,
-      categories: [
-        {
-          id: "uncategorized",
-          title: "Uncategorized"
-        }
-      ],
-      goals: [
-        {
-          id: "uncategorized",
-          title: "Uncategorized",
-          category: "uncategorized",
-          tasks: []
-        }
-      ],
-      user: {
-        name: "John Doe",
-        email: "johndoe@example.com"
+  emptyState =  {
+    subtitle: "Get your life together",
+    display: "today",
+    focusedDate: null,
+    messages: [
+      "Get your life together",
+      "Aren't you better than this?",
+      "Seriously, Aren't you better than this?",
+      "Life really isn't that hard; why are you having so much trouble",
+      "Other people don't need a to do list; they just do stuff",
+      "Get it together!",
+      "Stopping making to do lists and just do your work!",
+      "Why are you have so much trouble getting stuff done it?",
+    ],
+    focusedGoal: null,
+    focusedCategory: null,
+    categories: [
+      {
+        id: "uncategorized",
+        title: "Uncategorized"
+      }
+    ],
+    goals: [
+      {
+        id: "uncategorized-goal",
+        title: "Uncategorized",
+        category: "uncategorized",
+        tasks: []
+      }
+    ],
+    user: {
+      name: "John Doe",
+      email: "johndoe@example.com"
+    },
+    goldAmount: 0
+  }
+
+
+  testState =  {
+    subtitle: "Get your life together",
+    display: "today",
+    messages: [
+      "Get your life together",
+      "Aren't you better than this?",
+      "Seriously, Aren't you better than this?",
+      "Life really isn't that hard; why are you having so much trouble",
+      "Other people don't need a to do list; they just do stuff",
+      "Get it together!",
+      "Stopping making to do lists and just do your work!",
+      "Why are you have so much trouble getting stuff done it?",
+    ],
+    focusedGoal: null,
+    focusedCategory: null,
+    categories: [
+      {
+        id: "job",
+        title: "job"
       },
-      goldAmount: 0
-    }
-
-
-    const testState =  {
-      subtitle: "Get your life together",
-      display: "today",
-      messages: [
-        "Get your life together",
-        "Aren't you better than this?",
-        "Seriously, Aren't you better than this?",
-        "Life really isn't that hard; why are you having so much trouble",
-        "Other people don't need a to do list; they just do stuff",
-        "Get it together!",
-        "Stopping making to do lists and just do your work!",
-        "Why are you have so much trouble getting stuff done it?",
-      ],
-      focusedGoal: null,
-      focusedCategory: null,
-      categories: [
-        {
-          id: "job",
-          title: "job"
-        },
-        {
-          id: "social",
-          title: "social"
-        },
-        {
-          id: "language",
-          title: "language"
-        }
-      ],
-      goals: [
-        {
-          id: "learngerman",
-          title: "learn german",
-          category: "language",
-          tasks: []
-        },
-        {
-          id: "learnfrench",
-          title: "learn french",
-          category: "language",
-          tasks: []
-        },
-        {
-          id: "getnewjob",
-          title: "get new job",
-          category: "job",
-          date: "June, 2016",
-          completedAt: false,
-          tasks: [
-            {
-              id: "createresume",
-              title: "create resume",
-              date: "today",
-              completedAt: false
-            },
-            {
-              id: "sendoutresume",
-              title: "send out resume",
-              date: "week",
-              completedAt: false
-            }
-          ]
-        },
-        {
-          id: "makenewfriend",
-          title: "make new friend",
-          category: "social",
-          date: "May, 2016",
-          completedAt: false,
-          tasks: [
-            {
-              "id": "gotoparty",
-              title: "go to party",
-              date: "today",
-              completedAt: false
-            },
-            {
-              "id": "startmeetupgroup",
-              title: "start meet up group",
-              date: "week",
-              completedAt: false
-            }
-          ]
-        }
-      ],
-      user: {
-        name: "Jeffrey C. Witt",
-        email: "jeffreycwitt@gmail.com"
+      {
+        id: "social",
+        title: "social"
       },
-      goldAmount: 10
-    }
-    this.state = emptyState;
+      {
+        id: "language",
+        title: "language"
+      }
+    ],
+    goals: [
+      {
+        id: "learngerman",
+        title: "learn german",
+        category: "language",
+        tasks: []
+      },
+      {
+        id: "learnfrench",
+        title: "learn french",
+        category: "language",
+        tasks: []
+      },
+      {
+        id: "getnewjob",
+        title: "get new job",
+        category: "job",
+        date: "June, 2016",
+        completedAt: false,
+        tasks: [
+          {
+            id: "createresume",
+            title: "create resume",
+            date: "today",
+            completedAt: false
+          },
+          {
+            id: "sendoutresume",
+            title: "send out resume",
+            date: "week",
+            completedAt: false
+          }
+        ]
+      },
+      {
+        id: "makenewfriend",
+        title: "make new friend",
+        category: "social",
+        date: "May, 2016",
+        completedAt: false,
+        tasks: [
+          {
+            "id": "gotoparty",
+            title: "go to party",
+            date: "today",
+            completedAt: false
+          },
+          {
+            "id": "startmeetupgroup",
+            title: "start meet up group",
+            date: "week",
+            completedAt: false
+          }
+        ]
+      }
+    ],
+    user: {
+      name: "Jeffrey C. Witt",
+      email: "jeffreycwitt@gmail.com"
+    },
+    goldAmount: 10
   }
-  componentDidMount(){
-    // try to load data from local storage
-    try {
-      const state = JSON.parse(localStorage.getItem("gobitsState"));
-      //only load state if state is not empty
-      if (state){
-          this.setState(() => (state));
-        }
-    }
-    // if local storage fails do nothing and proceed with the default state
-    catch (e) {
+  state = this.emptyState;
 
-
-    }
-
-  }
-  componentDidUpdate(){
-    localStorage.setItem("gobitsState", JSON.stringify(this.state))
-
-  }
-  setSubtitle(){
+  setSubtitle = () => {
     const randomNum = Math.floor(Math.random() * this.state.messages.length)
     const message = this.state.messages[randomNum];
     this.setState(() => {
@@ -196,16 +157,16 @@ export default class GoBitsApp extends React.Component {
     });
 
 
-  }
-  changeFocusedGoal(index){
+  };
+  changeFocusedGoal = (index) => {
     this.setState(() => {
       return {
         focusedGoal: index
       }
     });
     this.setSubtitle();
-  }
-  changeFocusedCategory(index){
+  };
+  changeFocusedCategory = (index) => {
     this.setState(() => {
       return {
         focusedCategory: index,
@@ -213,8 +174,8 @@ export default class GoBitsApp extends React.Component {
       }
     });
     this.setSubtitle();
-  }
-  handleAddGoal(goal, date, category){
+  };
+  handleAddGoal = (goal, date, category) => {
     if (!goal){
       return 'Enter valid value to add item';
     }
@@ -237,8 +198,8 @@ export default class GoBitsApp extends React.Component {
       }
     });
     this.setSubtitle();
-  }
-  handleAddCategory(category){
+  };
+  handleAddCategory = (category) => {
     if (!category){
       return 'Enter valid value to add item';
     }
@@ -258,8 +219,8 @@ export default class GoBitsApp extends React.Component {
       }
     });
     this.setSubtitle();
-  }
-  handleAddTask(task, date, goalIndex){
+  };
+  handleAddTask = (task, date, goalIndex, category) => {
     if (!task){
       return 'Enter valid value to add item';
     }
@@ -294,8 +255,8 @@ export default class GoBitsApp extends React.Component {
       }
     });
     this.setSubtitle();
-  }
-  setGoalStatus(goal){
+  };
+  setGoalStatus = (goal) => {
     let goalStatus = moment().format();
     if (goal.tasks.length > 0) {
       goal.tasks.forEach((t) =>{
@@ -308,10 +269,13 @@ export default class GoBitsApp extends React.Component {
       goalStatus = false
     }
     return goalStatus
-  }
-  handleCheck(taskIndex, goalIndex){
+  };
+  handleCheck = (taskIndex, goalIndex) => {
 
     this.setState((prevState) => {
+      if (!goalIndex){
+        goalIndex = this.findGoalIndexFromTask(taskIndex, prevState);
+      }
       const currentValue = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completedAt
       const prevStateCopy = prevState
       prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completedAt = !currentValue ? moment().format() : false
@@ -325,10 +289,30 @@ export default class GoBitsApp extends React.Component {
       }
     });
     this.setSubtitle();
+  };
+
+  findGoalIndexFromTask = (taskIndex, prevState) => {
+    let goalIndex = prevState.goals.filter((g) =>{
+      let goalid = "";
+      g.tasks.forEach((t) => {
+        if (t.id === taskIndex){
+          console.log(g)
+          goalid = g.id
+        }
+      });
+      return goalid
+    });
+    goalIndex = goalIndex[0].id
+    console.log(goalIndex);
+    return goalIndex;
   }
-  handleThumbsDown(taskIndex, goalIndex){
-    console.log("Test")
+
+  handleThumbsDown = (taskIndex, goalIndex) => {
     this.setState((prevState) => {
+      if (!goalIndex){
+        goalIndex = this.findGoalIndexFromTask(taskIndex, prevState);
+      }
+
       const currentValue = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].rejectedCount
       const prevStateCopy = prevState
       prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].rejectedCount = currentValue + 1
@@ -342,12 +326,12 @@ export default class GoBitsApp extends React.Component {
       }
     });
     this.setSubtitle();
-  }
-  handleDeleteTask(taskIndex, goalIndex){
-
+  };
+  handleDeleteTask = (taskIndex, goalIndex) => {
     this.setState((prevState) => {
-
-
+      if (!goalIndex){
+        goalIndex = this.findGoalIndexFromTask(taskIndex, prevState);
+      }
       const prevStateCopy = prevState
       let taskDeleteIndex = prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.findIndex((g, i) => {
         if (g.id === goalIndex){
@@ -367,8 +351,8 @@ export default class GoBitsApp extends React.Component {
       }
     });
     this.setSubtitle();
-  }
-  handleDeleteGoal(goalIndex){
+  };
+  handleDeleteGoal = (goalIndex) => {
 
     if (this.state.focusedGoal === goalIndex){
       this.setState(() => {
@@ -395,8 +379,8 @@ export default class GoBitsApp extends React.Component {
     });
     this.setSubtitle();
 
-  }
-  handleDeleteCategory(categoryIndex){
+  };
+  handleDeleteCategory = (categoryIndex) => {
 
     if (this.state.focusedCategory === categoryIndex){
       this.setState(() => {
@@ -423,8 +407,8 @@ export default class GoBitsApp extends React.Component {
     });
     this.setSubtitle();
 
-  }
-  filteredGoals(){
+  };
+  filteredGoals = () => {
     if (this.state.focusedCategory){
       const newGoals = this.state.goals.filter((g, i) => {
         if (g.category === this.state.focusedCategory){
@@ -436,8 +420,8 @@ export default class GoBitsApp extends React.Component {
     else{
       return this.state.goals
     }
-  }
-  filteredTasks(){
+  };
+  filteredTasks = () => {
     if (this.state.focusedGoal){
       const currentGoal = this.state.goals.filter((g, i) => {
         if (g.id === this.state.focusedGoal){
@@ -457,8 +441,8 @@ export default class GoBitsApp extends React.Component {
       });
       return [].concat.apply([], allTasks)
     }
-  }
-  filteredTodaysTasks(date){
+  };
+  filteredTodaysTasks = (date) => {
     if (!date){
       date = moment().format("YYYY-MM-DD")
     }
@@ -473,8 +457,8 @@ export default class GoBitsApp extends React.Component {
       return tasks
     });
     return [].concat.apply([], allTasks)
-  }
-  displayTasks(){
+  };
+  displayTasks = () => {
     if (this.state.focusedGoal){
       return(
         <div>
@@ -489,8 +473,8 @@ export default class GoBitsApp extends React.Component {
         </div>
       )
     }
-  }
-  displayGoals(){
+  };
+  displayGoals = () => {
     if (this.state.focusedCategory){
       return (
         <div>
@@ -502,10 +486,10 @@ export default class GoBitsApp extends React.Component {
         </div>
       )
     }
-  }
-  displayDashboard(){
+  };
+  displayDashboard = () => {
     return(
-      <div className="row">
+      <div className="dashboard row">
         <div className="col-sm-4">
           <Categories
             focusedCategory={this.state.focusedCategory} categories={this.state.categories} changeFocusedCategory={this.changeFocusedCategory} handleDeleteCategory={this.handleDeleteCategory}/>
@@ -520,15 +504,15 @@ export default class GoBitsApp extends React.Component {
         </div>
       </div>
     )
-  }
-  handleChangeFocusDate(date){
+  };
+  handleChangeFocusDate = (date) => {
     this.setState(() => {
       return{focusedDate: date}
     });
-  }
-  displayToday(date){
+  };
+  displayToday = (date) => {
     return(
-      <div>
+      <div className="today">
         <Today
           tasks={this.filteredTodaysTasks(this.state.focusedDate)}
           goalIndex={this.state.focusedGoal}
@@ -539,11 +523,17 @@ export default class GoBitsApp extends React.Component {
           focusedDate={this.state.focusedDate}
         />
           <AddTask
-            goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask} display={this.state.display} focusedDate={this.state.focusedDate}/>
+            goalIndex={this.state.focusedGoal}
+            handleAddTask={this.handleAddTask}
+            display={this.state.display}
+            focusedDate={this.state.focusedDate}
+            goals={this.state.goals}
+            categories={this.state.categories}
+          />
       </div>
     )
-  }
-  handleChangeView(){
+  };
+  handleChangeView = () => {
     if (this.state.display === "dashboard"){
       this.setState(() => {
         return{display: "today"}
@@ -554,8 +544,28 @@ export default class GoBitsApp extends React.Component {
         return{display: "dashboard"}
       });
     };
+  };
+  componentDidMount(){
+    // try to load data from local storage
+    try {
+      const state = JSON.parse(localStorage.getItem("gobitsState"));
+      //only load state if state is not empty
+      if (state){
+          this.setState(() => (state));
+        }
+    }
+    // if local storage fails do nothing and proceed with the default state
+    catch (e) {
+
+
+    }
+
   }
-render(){
+  componentDidUpdate(){
+    localStorage.setItem("gobitsState", JSON.stringify(this.state))
+
+  }
+  render(){
     const title = "Gobits";
     console.log("state at render", this.state)
     return (
