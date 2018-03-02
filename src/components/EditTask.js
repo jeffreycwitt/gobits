@@ -4,7 +4,19 @@ import moment from 'moment'
 export default class EditTask extends React.Component {
   state = {
     error: undefined,
-    selectedCategory: "uncategorized"
+    selectedCategory: "uncategorized",
+    selectedGoal: "uncategorized-goal",
+  }
+  componentWillMount(){
+    console.log("did mount test", this.props)
+    const goalid = this.props.editTask.goal
+    this.setState((prevState) => {
+      return {
+        selectedCategory: this.getEditTaskCategory(),
+        selectedGoal: goalid
+
+      }
+    });
   }
   handleUpdateTask = (e) => {
     e.preventDefault()
@@ -26,16 +38,24 @@ export default class EditTask extends React.Component {
     const category = e.target.value;
     this.setState(() => ({selectedCategory: category}))
   }
+  handleChangeGoal = (e) => {
+    const category = e.target.value;
+    this.setState(() => ({selectedGoal: category}))
+  }
+  getEditTaskCategory = () => {
+    let defaultGoal = this.props.editTask.goal
+    let taskGoal = this.props.goals.filter((g) => {
+      if (g.id === defaultGoal){
+        return g
+      }
+    });
+    const taskCategory = taskGoal[0].category;
+    return taskCategory;
+  }
   render(){
-
+    console.log("state at render in edittask", this.state)
     const displayCategoriesList = () => {
-      let defaultGoal = this.props.editTask.goal
-      let taskCategory = this.props.goals.filter((g) => {
-        if (g.id === defaultGoal){
-          return g.category
-        }
-      });
-      taskCategory = taskCategory[0];
+
 
       const categories = this.props.categories.map((category) => {
         return(
@@ -44,7 +64,7 @@ export default class EditTask extends React.Component {
       });
       return (
         <div className="assign">
-          <select name="categories" onChange={this.handleChangeCategory} defaultValue={taskCategory}>
+          <select name="categories" onChange={this.handleChangeCategory} value={this.state.selectedCategory}>
             {
               categories.length > 0 ? categories : <option value="uncategorized">Uncategorized</option>
             }
@@ -67,7 +87,7 @@ export default class EditTask extends React.Component {
       return (
         <div className="assign">
 
-          <select name="goals" defaultValue={defaultGoal}>
+          <select name="goals" onChange={this.handleChangeGoal} value={this.state.selectedGoal}>
             {
               goals.length > 0 ? goals : <option value="uncategorized-goal">Uncategorized</option>
             }

@@ -214,6 +214,14 @@ export default class GoBitsApp extends React.Component {
             createdAt: moment().format()
           }
         ),
+        goals: prevState.goals.concat(
+          {
+            id: uuidv4(),
+            title: "Uncategorized",
+            category: categoryId,
+            createdAt: moment().format()
+          }
+        ),
         goldAmount: prevState.goldAmount + 1,
         focusedCategory: categoryId,
         focusedGoal: undefined
