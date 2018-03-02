@@ -604,8 +604,7 @@ export default class GoBitsApp extends React.Component {
     }
     // if local storage fails do nothing and proceed with the default state
     catch (e) {
-
-
+      
     }
 
   }
