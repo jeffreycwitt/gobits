@@ -8,7 +8,6 @@ export default class EditTask extends React.Component {
     selectedGoal: "uncategorized-goal",
   }
   componentWillMount(){
-    console.log("did mount test", this.props)
     const goalid = this.props.editTask.goal
     this.setState((prevState) => {
       return {
@@ -53,7 +52,6 @@ export default class EditTask extends React.Component {
     return taskCategory;
   }
   render(){
-    console.log("state at render in edittask", this.state)
     const displayCategoriesList = () => {
 
 
