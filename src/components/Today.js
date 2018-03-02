@@ -8,7 +8,6 @@ export default class Today extends React.Component {
   handleChangeFocusDate = (e) => {
     e.preventDefault();
     const date = this.props.focusedDate ? this.props.focusedDate : moment();
-    console.log("this", this.props)
     this.props.handleChangeFocusDate(moment(date).add(1, "d").format("YYYY-MM-DD"));
   };
   handleTodayDate = (e) => {
@@ -33,10 +32,12 @@ export default class Today extends React.Component {
               <Task
               key={t.id}
               task={t}
-              goalIndex={undefined}
+              goalId={undefined}
               handleCheck={this.props.handleCheck}
               handleDeleteTask={this.props.handleDeleteTask}
-              handleThumbsDown={this.props.handleThumbsDown}/>
+              handleThumbsDown={this.props.handleThumbsDown}
+              handleFocusTask={this.props.handleFocusTask}
+            />
           );
       });
       return tasks

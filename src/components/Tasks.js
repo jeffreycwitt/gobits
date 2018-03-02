@@ -10,10 +10,11 @@ export default class Tasks extends React.Component {
               <Task
               key={t.id}
               task={t}
-              goalIndex={this.props.goalIndex}
+              goalId={this.props.goalId}
               handleCheck={this.props.handleCheck}
               handleDeleteTask={this.props.handleDeleteTask}
               handleThumbsDown={this.props.handleThumbsDown}
+              handleFocusTask={this.props.handleFocusTask}
             />
           );
       });

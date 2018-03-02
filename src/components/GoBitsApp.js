@@ -14,12 +14,13 @@ import Goals from './Goals'
 import Header from './Header'
 import Today from './Today'
 import NavBar from './NavBar'
+import EditTaskModal from './EditTaskModal'
 
 export default class GoBitsApp extends React.Component {
   emptyState =  {
     subtitle: "Get your life together",
     display: "today",
-    focusedDate: null,
+    focusedDate: undefined,
     messages: [
       "Get your life together",
       "Aren't you better than this?",
@@ -30,8 +31,9 @@ export default class GoBitsApp extends React.Component {
       "Stopping making to do lists and just do your work!",
       "Why are you have so much trouble getting stuff done it?",
     ],
-    focusedGoal: null,
-    focusedCategory: null,
+    focusedTask: undefined,
+    focusedGoal: undefined,
+    focusedCategory: undefined,
     categories: [
       {
         id: "uncategorized",
@@ -42,10 +44,10 @@ export default class GoBitsApp extends React.Component {
       {
         id: "uncategorized-goal",
         title: "Uncategorized",
-        category: "uncategorized",
-        tasks: []
+        category: "uncategorized"
       }
     ],
+    tasks: [],
     user: {
       name: "John Doe",
       email: "johndoe@example.com"
@@ -170,7 +172,7 @@ export default class GoBitsApp extends React.Component {
     this.setState(() => {
       return {
         focusedCategory: index,
-        focusedGoal: null
+        focusedGoal: undefined
       }
     });
     this.setSubtitle();
@@ -189,8 +191,7 @@ export default class GoBitsApp extends React.Component {
             category: category,
             date: date,
             completedAt: false,
-            createdAt: moment().format(),
-            tasks: []
+            createdAt: moment().format()
           }
         ),
         goldAmount: prevState.goldAmount + 1,
@@ -215,149 +216,173 @@ export default class GoBitsApp extends React.Component {
         ),
         goldAmount: prevState.goldAmount + 1,
         focusedCategory: categoryId,
-        focusedGoal: null
+        focusedGoal: undefined
       }
     });
     this.setSubtitle();
   };
-  handleAddTask = (task, date, goalIndex, category) => {
+  handleAddTask = (task, date, goalId, category) => {
     if (!task){
       return 'Enter valid value to add item';
     }
-    if (!goalIndex){
-      goalIndex = "uncategorized"
+    if (!goalId){
+      goalId = "uncategorized-goal"
     }
     if (date === "today"){
       date = moment().format("YYYY-MM-DD")
     }
     this.setState((prevState) => {
       //const updatedTasks = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.concat({title: task, date: date, completed: false})
-      const prevStateCopy = prevState
-      let goal = prevStateCopy.goals.filter(g => g.id === goalIndex)[0]
-      let updatedTasks = goal.tasks.concat(
-        {
-          id: uuidv4(),
-          title: task,
-          date: date,
-          completedAt: false,
-          createdAt: moment().format(),
-          rejectedCount: 0
-        }
-      )
-      goal.tasks = updatedTasks
-
-      const goalStatus = this.setGoalStatus(goal)
-      goal.completedAt = goalStatus;
+      return {
+        tasks: prevState.tasks.concat(
+          {
+            id: uuidv4(),
+            title: task,
+            date: date,
+            completedAt: false,
+            createdAt: moment().format(),
+            rejectedCount: 0,
+            goal: goalId
+          }
+        ),
+        goldAmount: prevState.goldAmount + 1,
+      }
+    });
+    this.setSubtitle();
+  };
+  handleUpdateTask = (taskId, title, date, goalId) => {
+    if (!taskId){
+      return 'Enter valid value to add item';
+    }
+    if (!goalId){
+      goalId = "uncategorized-goal"
+    }
+    if (date === "today"){
+      date = moment().format("YYYY-MM-DD")
+    }
+    this.setState((prevState) => {
+      //const updatedTasks = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.concat({title: task, date: date, completed: false})
+      let prevStateCopy = prevState
+      prevStateCopy.tasks.filter(t => t.id === taskId)[0].title = title;
+      prevStateCopy.tasks.filter(t => t.id === taskId)[0].date = date;
+      prevStateCopy.tasks.filter(t => t.id === taskId)[0].goal = goalId;
 
       return {
-        goals: prevStateCopy.goals,
-        goldAmount: prevState.goldAmount + 1
+        tasks: prevStateCopy.tasks,
+        goldAmount: prevState.goldAmount + 1,
       }
     });
     this.setSubtitle();
   };
   setGoalStatus = (goal) => {
+    //start with assumption that goal is completed
     let goalStatus = moment().format();
-    if (goal.tasks.length > 0) {
-      goal.tasks.forEach((t) =>{
+    let goalsPerTask = 0;
+    // check to see if there are any completed tasks for this goal
+    this.state.tasks.forEach((t) =>{
+      if (t.goal === goal.id){
+        goalsPerTask++;
         if (t.completedAt === false){
-          goalStatus = false
+          goalStatus = false;
         }
-      });
-    }
-    else{
+      }
+    });
+    //check to see if there are any tasks for this goal
+    if (goalsPerTask === 0) {
       goalStatus = false
     }
     return goalStatus
   };
-  handleCheck = (taskIndex, goalIndex) => {
+  handleCheck = (taskId, goalId) => {
 
     this.setState((prevState) => {
-      if (!goalIndex){
-        goalIndex = this.findGoalIndexFromTask(taskIndex, prevState);
+      if (!goalId){
+        goalId = prevState.tasks.filter(t => t.id === taskId)[0].goal
       }
-      const currentValue = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completedAt
+      const currentValue = prevState.tasks.filter(t => t.id === taskId)[0].completedAt
       const prevStateCopy = prevState
-      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].completedAt = !currentValue ? moment().format() : false
-
-      const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalIndex)[0])
-      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].completedAt = goalStatus;
+      prevStateCopy.tasks.filter(t => t.id === taskId)[0].completedAt = !currentValue ? moment().format() : false;
+      const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalId)[0]);
+      prevStateCopy.goals.filter(g => g.id === goalId)[0].completedAt = goalStatus;
 
       return {
         goals: prevStateCopy.goals,
+        tasks: prevStateCopy.tasks,
         goldAmount: prevState.goldAmount + 1
       }
     });
     this.setSubtitle();
   };
 
-  findGoalIndexFromTask = (taskIndex, prevState) => {
-    let goalIndex = prevState.goals.filter((g) =>{
-      let goalid = "";
-      g.tasks.forEach((t) => {
-        if (t.id === taskIndex){
-          console.log(g)
-          goalid = g.id
-        }
-      });
-      return goalid
-    });
-    goalIndex = goalIndex[0].id
-    console.log(goalIndex);
-    return goalIndex;
-  }
+  // findGoalIndexFromTask = (taskId, prevState) => {
+  //   let goalId = prevState.goals.filter((g) =>{
+  //     let goalid = "";
+  //     g.tasks.forEach((t) => {
+  //       if (t.id === taskIndex){
+  //         console.log(g)
+  //         goalid = g.id
+  //       }
+  //     });
+  //     return goalid
+  //   });
+  //   goalIndex = goalIndex[0].id
+  //   console.log(goalIndex);
+  //   return goalIndex;
+  // }
 
-  handleThumbsDown = (taskIndex, goalIndex) => {
+  handleThumbsDown = (taskId, goalId) => {
     this.setState((prevState) => {
-      if (!goalIndex){
-        goalIndex = this.findGoalIndexFromTask(taskIndex, prevState);
+      if (!goalId){
+        goalId = prevState.tasks.filter(t => t.id === taskId)[0].goal;
       }
 
-      const currentValue = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].rejectedCount
-      const prevStateCopy = prevState
-      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.filter(t => t.id === taskIndex)[0].rejectedCount = currentValue + 1
+      const currentValue = prevState.tasks.filter(t => t.id === taskId)[0].rejectedCount;
+      const prevStateCopy = prevState;
+      prevStateCopy.tasks.filter(t => t.id === taskId)[0].rejectedCount = currentValue + 1;
 
-      const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalIndex)[0])
-      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].completedAt = goalStatus;
+      const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalId)[0]);
+      prevStateCopy.goals.filter(g => g.id === goalId)[0].completedAt = goalStatus;
 
       return {
         goals: prevStateCopy.goals,
+        tasks: prevStateCopy.tasks,
         goldAmount: prevState.goldAmount + 1
       }
     });
     this.setSubtitle();
   };
-  handleDeleteTask = (taskIndex, goalIndex) => {
+  handleDeleteTask = (taskId, goalId) => {
     this.setState((prevState) => {
-      if (!goalIndex){
-        goalIndex = this.findGoalIndexFromTask(taskIndex, prevState);
+      if (!goalId){
+        goalId = prevState.tasks.filter(t => t.id === taskId)[0].goal;
       }
       const prevStateCopy = prevState
-      let taskDeleteIndex = prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.findIndex((g, i) => {
-        if (g.id === goalIndex){
+      let taskDeleteIndex = prevStateCopy.tasks.findIndex((t, i) => {
+        if (t.id === taskId){
           return true
         }
       });
-      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].tasks.splice(taskDeleteIndex, 1);
+      prevStateCopy.tasks.splice(taskDeleteIndex, 1);
       // set goal status
 
-      const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalIndex)[0])
-      prevStateCopy.goals.filter(g => g.id === goalIndex)[0].completedAt = goalStatus;
+      const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalId)[0])
+      prevStateCopy.goals.filter(g => g.id === goalId)[0].completedAt = goalStatus;
 
       return {
         goals: prevStateCopy.goals,
+        tasks: prevStateCopy.tasks,
         goldAmount: prevState.goldAmount + 1
 
       }
     });
     this.setSubtitle();
   };
-  handleDeleteGoal = (goalIndex) => {
+  handleDeleteGoal = (goalId) => {
 
-    if (this.state.focusedGoal === goalIndex){
+    if (this.state.focusedGoal === goalId){
       this.setState(() => {
       return {
-        focusedGoal: null
+        focusedGoal: undefined
       }
     });
   }
@@ -366,12 +391,12 @@ export default class GoBitsApp extends React.Component {
 
       const prevStateCopy = prevState
 
-      let index = prevStateCopy.goals.findIndex((g, i) => {
+      let goalDeleteIndex = prevStateCopy.goals.findIndex((g, i) => {
         if (g.id === goalIndex){
           return true
         }
       });
-      prevStateCopy.goals.splice(index, 1);
+      prevStateCopy.goals.splice(goalDeleteIndex, 1);
       return {
         goals: prevStateCopy.goals,
         goldAmount: prevState.goldAmount + 1
@@ -380,34 +405,49 @@ export default class GoBitsApp extends React.Component {
     this.setSubtitle();
 
   };
-  handleDeleteCategory = (categoryIndex) => {
+  handleDeleteCategory = (categoryId) => {
 
-    if (this.state.focusedCategory === categoryIndex){
+    if (this.state.focusedCategory === categoryId){
       this.setState(() => {
       return {
-        focusedCategory: null
-      }
-    });
-  }
+        focusedCategory: undefined
+        }
+      });
+    }
 
     this.setState((prevState) => {
 
-      const prevStateCopy = prevState
+    const prevStateCopy = prevState
 
-      let index = prevStateCopy.categories.findIndex((c, i) => {
-        if (c.id === categoryIndex){
-          return true
-        }
-      });
-      prevStateCopy.categories.splice(index, 1);
-      return {
-        categories: prevStateCopy.categories,
-        goldAmount: prevState.goldAmount + 1
+    let categoryDeleteIndex = prevStateCopy.categories.findIndex((c, i) => {
+      if (c.id === categoryId){
+        return true
+      }
+    });
+    prevStateCopy.categories.splice(index, 1);
+    return {
+      categories: prevStateCopy.categories,
+      goldAmount: prevState.goldAmount + 1
       }
     });
     this.setSubtitle();
-
   };
+
+  handleClearFocusedTask = () => {
+    this.setState(() => {
+      return {
+        focusedTask: undefined
+      }
+    });
+  };
+  handleFocusTask = (taskId) => {
+    this.setState(() => {
+      return {
+        focusedTask: taskId
+      }
+    });
+  };
+
   filteredGoals = () => {
     if (this.state.focusedCategory){
       const newGoals = this.state.goals.filter((g, i) => {
@@ -423,23 +463,15 @@ export default class GoBitsApp extends React.Component {
   };
   filteredTasks = () => {
     if (this.state.focusedGoal){
-      const currentGoal = this.state.goals.filter((g, i) => {
-        if (g.id === this.state.focusedGoal){
-          return g
+      const tasks = this.state.tasks.filter((t, i) => {
+        if (t.goal === this.state.focusedGoal){
+          return t
         }
       });
-      if (currentGoal.length > 0) {
-        return currentGoal[0].tasks
-      }
-      else {
-        return []
-      }
+      return tasks;
     }
     else{
-      const allTasks = this.state.goals.map((g) => {
-        return g.tasks
-      });
-      return [].concat.apply([], allTasks)
+      return this.state.tasks;
     }
   };
   filteredTodaysTasks = (date) => {
@@ -447,16 +479,12 @@ export default class GoBitsApp extends React.Component {
       date = moment().format("YYYY-MM-DD")
     }
 
-    const allTasks = this.state.goals.map((g) => {
-      let tasks = []
-       g.tasks.forEach((t) => {
-        if (t.date === date){
-          tasks.push(t)
+    const todaysTasks = this.state.tasks.filter((t,i) => {
+      if (t.date === date){
+        return t
         }
       });
-      return tasks
-    });
-    return [].concat.apply([], allTasks)
+    return todaysTasks;
   };
   displayTasks = () => {
     if (this.state.focusedGoal){
@@ -464,12 +492,14 @@ export default class GoBitsApp extends React.Component {
         <div>
             <Tasks
               tasks={this.filteredTasks()}
-              goalIndex={this.state.focusedGoal}
+              goalId={this.state.focusedGoal}
               handleCheck={this.handleCheck}
               handleDeleteTask={this.handleDeleteTask}
-              handleThumbsDown={this.handleThumbsDown}/>
+              handleThumbsDown={this.handleThumbsDown}
+              handleFocusTask={this.handleFocusTask}
+            />
             <AddTask
-              goalIndex={this.state.focusedGoal} handleAddTask={this.handleAddTask}/>
+              goalId={this.state.focusedGoal} handleAddTask={this.handleAddTask}/>
         </div>
       )
     }
@@ -479,7 +509,11 @@ export default class GoBitsApp extends React.Component {
       return (
         <div>
           <Goals
-            goals={this.filteredGoals()} focusedGoal={this.state.focusedGoal} category={this.state.focusedCategory} changeFocusedGoal={this.changeFocusedGoal} handleDeleteGoal={this.handleDeleteGoal}/>
+            goals={this.filteredGoals()}
+            focusedGoal={this.state.focusedGoal}
+            category={this.state.focusedCategory}
+            changeFocusedGoal={this.changeFocusedGoal}
+            handleDeleteGoal={this.handleDeleteGoal}/>
           <AddGoal
             category={this.state.focusedCategory}
             handleAddGoal={this.handleAddGoal} />
@@ -492,7 +526,10 @@ export default class GoBitsApp extends React.Component {
       <div className="dashboard row">
         <div className="col-sm-4">
           <Categories
-            focusedCategory={this.state.focusedCategory} categories={this.state.categories} changeFocusedCategory={this.changeFocusedCategory} handleDeleteCategory={this.handleDeleteCategory}/>
+            focusedCategory={this.state.focusedCategory}
+            categories={this.state.categories}
+            changeFocusedCategory={this.changeFocusedCategory}
+            handleDeleteCategory={this.handleDeleteCategory}/>
           <AddCategory
             handleAddCategory={this.handleAddCategory}/>
         </div>
@@ -515,15 +552,16 @@ export default class GoBitsApp extends React.Component {
       <div className="today">
         <Today
           tasks={this.filteredTodaysTasks(this.state.focusedDate)}
-          goalIndex={this.state.focusedGoal}
+          goalId={this.state.focusedGoal}
           handleCheck={this.handleCheck}
           handleDeleteTask={this.handleDeleteTask}
           handleThumbsDown={this.handleThumbsDown}
           handleChangeFocusDate={this.handleChangeFocusDate}
           focusedDate={this.state.focusedDate}
+          handleFocusTask={this.handleFocusTask}
         />
           <AddTask
-            goalIndex={this.state.focusedGoal}
+            goalId={this.state.focusedGoal}
             handleAddTask={this.handleAddTask}
             display={this.state.display}
             focusedDate={this.state.focusedDate}
@@ -531,6 +569,8 @@ export default class GoBitsApp extends React.Component {
             categories={this.state.categories}
           />
       </div>
+
+
     )
   };
   handleChangeView = () => {
@@ -578,6 +618,18 @@ export default class GoBitsApp extends React.Component {
         {this.state.display === "dashboard" ? this.displayDashboard() : this.displayToday()}
         <Gold
           goldAmount={this.state.goldAmount}/>
+
+        <EditTaskModal
+          handleClearFocusedTask={this.handleClearFocusedTask}
+          editTask={this.state.tasks.filter(t => t.id === this.state.focusedTask)[0]}
+          focusedTask={this.state.focusedTask}
+          goalId={this.state.focusedGoal}
+          handleUpdateTask={this.handleUpdateTask}
+          display={this.state.display}
+          focusedDate={this.state.focusedDate}
+          goals={this.state.goals}
+          categories={this.state.categories}
+        />
       </div>
     )
   }
