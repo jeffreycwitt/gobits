@@ -432,7 +432,7 @@ export default class GoBitsApp extends React.Component {
         return true
       }
     });
-    prevStateCopy.categories.splice(index, 1);
+    prevStateCopy.categories.splice(categoryDeleteIndex, 1);
     return {
       categories: prevStateCopy.categories,
       goldAmount: prevState.goldAmount + 1
@@ -604,7 +604,7 @@ export default class GoBitsApp extends React.Component {
     }
     // if local storage fails do nothing and proceed with the default state
     catch (e) {
-      
+
     }
 
   }
