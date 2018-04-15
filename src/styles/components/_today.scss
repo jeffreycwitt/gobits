@@ -1,4 +1,9 @@
 .today{
+  width: 100%;
+  margin: auto;
+  padding: 5px
+}
+.today-wrapper{
   width: 60%;
   margin: auto;
 }
@@ -8,4 +13,7 @@
     width: $mobile-width;
   }
 
+}
+.week-highlighted{
+  border: 1px solid black;
 }

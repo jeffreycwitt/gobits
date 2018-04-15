@@ -21,7 +21,7 @@ export default class EditTask extends React.Component {
     e.preventDefault()
     const taskId = this.props.editTask.id
     const defaultDate = this.props.focusedDate || moment().format("YYYY-MM-DD");
-    const date = this.props.display === "today" ? defaultDate : e.target.elements.date.value;
+    const date = e.target.elements.date.value;
     const title = e.target.elements.task.value.trim();
     const goal = e.target.elements.goals ? e.target.elements.goals.value : this.props.goalId;
     const error = this.props.handleUpdateTask(taskId, title, date, goal);

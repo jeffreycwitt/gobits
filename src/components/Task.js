@@ -6,7 +6,12 @@ const Task = (props) => {
   const goalId = props.goalId ? props.goalId : undefined;
 
   return (
-    <li className={!props.task.completedAt ? "notCompleted" : "completed"}>{props.task.title} {props.task.date}
+    <li className={!props.task.completedAt ? "notCompleted task" : "completed task"}>
+      <div>
+        {props.task.title}
+        {props.display === "dashboard" && props.task.date}
+      </div>
+      <div>
       <span className={thumbsUpClassNames}
         onClick={(e) => {
           props.handleCheck(props.task.id, goalId)
@@ -28,6 +33,7 @@ const Task = (props) => {
           props.handleFocusTask(props.task.id);
         }}
       />
+      </div>
     </li>
   );
 };

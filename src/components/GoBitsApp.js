@@ -15,6 +15,8 @@ import Header from './Header'
 import Today from './Today'
 import NavBar from './NavBar'
 import EditTaskModal from './EditTaskModal'
+import Week from './Week'
+import TodayNav from './TodayNav'
 
 export default class GoBitsApp extends React.Component {
   emptyState =  {
@@ -49,7 +51,7 @@ export default class GoBitsApp extends React.Component {
     ],
     tasks: [],
     user: {
-      name: "John Doe",
+      name: "Jeffrey C. Witt",
       email: "johndoe@example.com"
     },
     goldAmount: 0
@@ -505,6 +507,7 @@ export default class GoBitsApp extends React.Component {
               handleDeleteTask={this.handleDeleteTask}
               handleThumbsDown={this.handleThumbsDown}
               handleFocusTask={this.handleFocusTask}
+              display={this.state.display}
             />
             <AddTask
               goalId={this.state.focusedGoal} handleAddTask={this.handleAddTask}/>
@@ -555,43 +558,54 @@ export default class GoBitsApp extends React.Component {
       return{focusedDate: date}
     });
   };
+
+  displayWeek = () => {
+    return (
+      <Week
+        tasks={this.state.tasks}
+        goalId={this.state.focusedGoal}
+        handleCheck={this.handleCheck}
+        handleDeleteTask={this.handleDeleteTask}
+        handleThumbsDown={this.handleThumbsDown}
+        handleChangeFocusDate={this.handleChangeFocusDate}
+        focusedDate={this.state.focusedDate}
+        handleFocusTask={this.handleFocusTask}
+        handleAddTask={this.handleAddTask}
+        display={this.state.display}
+        goals={this.state.goals}
+        categories={this.state.categories}
+      />
+    )
+  }
+
   displayToday = (date) => {
     return(
-      <div className="today">
+      <div className="today-wrapper">
+        <h2>Today</h2>
+        <TodayNav
+          focusedDate={this.state.focusedDate}
+          handleChangeFocusDate={this.handleChangeFocusDate}
+        />
         <Today
           tasks={this.filteredTodaysTasks(this.state.focusedDate)}
           goalId={this.state.focusedGoal}
           handleCheck={this.handleCheck}
           handleDeleteTask={this.handleDeleteTask}
           handleThumbsDown={this.handleThumbsDown}
-          handleChangeFocusDate={this.handleChangeFocusDate}
           focusedDate={this.state.focusedDate}
           handleFocusTask={this.handleFocusTask}
+          handleAddTask={this.handleAddTask}
+          display={this.state.display}
+          goals={this.state.goals}
+          categories={this.state.categories}
         />
-          <AddTask
-            goalId={this.state.focusedGoal}
-            handleAddTask={this.handleAddTask}
-            display={this.state.display}
-            focusedDate={this.state.focusedDate}
-            goals={this.state.goals}
-            categories={this.state.categories}
-          />
       </div>
-
-
     )
   };
-  handleChangeView = () => {
-    if (this.state.display === "dashboard"){
-      this.setState(() => {
-        return{display: "today"}
-        });
-      }
-    else {
-      this.setState(() => {
-        return{display: "dashboard"}
-      });
-    };
+  handleChangeView = (view) => {
+    this.setState(() => {
+      return{display: view}
+    });
   };
   componentDidMount(){
     // try to load data from local storage
@@ -612,6 +626,18 @@ export default class GoBitsApp extends React.Component {
     localStorage.setItem("gobitsState", JSON.stringify(this.state))
 
   }
+  displayCurrentView = () => {
+    if (this.state.display === "dashboard"){
+      return this.displayDashboard();
+    }
+    else if (this.state.display === "week"){
+      return this.displayWeek();
+    }
+    else {
+      return this.displayToday();
+
+    }
+  }
   render(){
     const title = "Gobits";
     console.log("state at render", this.state)
@@ -622,7 +648,7 @@ export default class GoBitsApp extends React.Component {
         <User user={this.state.user}/>
         <NavBar currentView={this.state.display} changeView={this.handleChangeView}/>
         <hr/>
-        {this.state.display === "dashboard" ? this.displayDashboard() : this.displayToday()}
+        {this.displayCurrentView()}
         <Gold
           goldAmount={this.state.goldAmount}/>
 

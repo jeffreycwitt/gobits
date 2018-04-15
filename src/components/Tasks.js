@@ -15,6 +15,7 @@ export default class Tasks extends React.Component {
               handleDeleteTask={this.props.handleDeleteTask}
               handleThumbsDown={this.props.handleThumbsDown}
               handleFocusTask={this.props.handleFocusTask}
+              display={this.props.display}
             />
           );
       });

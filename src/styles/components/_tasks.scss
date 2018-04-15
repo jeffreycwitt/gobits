@@ -15,3 +15,11 @@ span.completedThumbsUp{
 span.notCompletedThumbsUp{
   color: black;
 }
+
+//task here inherits from li in bass.scss
+.task{
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+
+}

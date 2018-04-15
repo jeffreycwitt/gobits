@@ -1,34 +1,17 @@
 import React from 'react'
-import moment from 'moment'
 
 import Task from './Task'
+import AddTask from './AddTask';
 
 
 export default class Today extends React.Component {
-  handleChangeFocusDate = (e) => {
-    e.preventDefault();
-    const date = this.props.focusedDate ? this.props.focusedDate : moment();
-    this.props.handleChangeFocusDate(moment(date).add(1, "d").format("YYYY-MM-DD"));
-  };
-  handleTodayDate = (e) => {
-    e.preventDefault();
-    this.props.handleChangeFocusDate(moment().format("YYYY-MM-DD"));
-  };
-  handleNextDate = (e) => {
-    e.preventDefault();
-    const date = this.props.focusedDate ? this.props.focusedDate : moment();
-    this.props.handleChangeFocusDate(moment(date).add(1, "d").format("YYYY-MM-DD"));
-  };
-  handlePreviousDate = (e) => {
-    e.preventDefault();
-    const date = this.props.focusedDate ? this.props.focusedDate : moment();
-    this.props.handleChangeFocusDate(moment(date).subtract(1, "d").format("YYYY-MM-DD"));
-  };
+
   render(){
     const displayTasks = () => {
       if (this.props.tasks){
         const tasks = this.props.tasks.map((t, i) => {
           return(
+            <div>
               <Task
               key={t.id}
               task={t}
@@ -37,19 +20,27 @@ export default class Today extends React.Component {
               handleDeleteTask={this.props.handleDeleteTask}
               handleThumbsDown={this.props.handleThumbsDown}
               handleFocusTask={this.props.handleFocusTask}
+              display={this.props.display}
             />
+          </div>
           );
       });
       return tasks
     }
   };
-    const defaultDate = this.props.focusedDate || moment().format("YYYY-MM-DD");
+    const className = this.props.current ? "week-highlighted" : ""
     return (
-
-      <div>
-        <h2><a onClick={this.handlePreviousDate}>Previous</a> | <a onClick={this.handleNextDate}>Next</a> | <a onClick={this.handleTodayDate}>Today</a> </h2>
-        <h3>Current: {defaultDate}</h3>
+      <div className="today">
+        <p className={className}>{this.props.focusedDate}</p>
         {displayTasks()}
+        <AddTask
+          goalId={this.props.focusedGoal}
+          handleAddTask={this.props.handleAddTask}
+          display={this.props.display}
+          focusedDate={this.props.focusedDate}
+          goals={this.props.goals}
+          categories={this.props.categories}
+        />
       </div>
     );
   }

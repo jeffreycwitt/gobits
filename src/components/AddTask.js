@@ -9,7 +9,7 @@ export default class AddTask extends React.Component {
   handleAddTask = (e) => {
     e.preventDefault()
     const defaultDate = this.props.focusedDate || moment().format("YYYY-MM-DD");
-    const date = this.props.display === "today" ? defaultDate : "";
+    const date = (this.props.display === "today" || this.props.display === "week") ? defaultDate : "";
 
     const task = e.target.elements.task.value.trim();
     const goal = e.target.elements.goals ? e.target.elements.goals.value : this.props.goalId;

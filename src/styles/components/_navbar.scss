@@ -1,12 +1,16 @@
-.navbar
+.navbar-wrapper
 {
   text-align: center;
-  width: $desktop-width; 
+  width: $desktop-width;
   margin: auto;
+  display: flex;
+  justify-content: space-between;
+
+}
+.navbar
+{
   display: block;
-  box-sizing: border-box;
-  line-height: 1.5;
-  padding: 16px 0;
+
 }
 
 @media (max-width: $desktop-breakpoint){
