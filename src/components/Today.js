@@ -11,7 +11,7 @@ export default class Today extends React.Component {
       if (this.props.tasks){
         const tasks = this.props.tasks.map((t, i) => {
           return(
-            <div>
+
               <Task
               key={t.id}
               task={t}
@@ -20,9 +20,10 @@ export default class Today extends React.Component {
               handleDeleteTask={this.props.handleDeleteTask}
               handleThumbsDown={this.props.handleThumbsDown}
               handleFocusTask={this.props.handleFocusTask}
+              handleUpdateTask={this.props.handleUpdateTask}
               display={this.props.display}
             />
-          </div>
+          
           );
       });
       return tasks

@@ -241,6 +241,9 @@ export default class GoBitsApp extends React.Component {
     if (date === "today"){
       date = moment().format("YYYY-MM-DD")
     }
+    if (date === undefined){
+      date = ""
+    }
     this.setState((prevState) => {
       //const updatedTasks = prevState.goals.filter(g => g.id === goalIndex)[0].tasks.concat({title: task, date: date, completed: false})
       return {
@@ -284,6 +287,7 @@ export default class GoBitsApp extends React.Component {
     });
     this.setSubtitle();
   };
+
   setGoalStatus = (goal) => {
     //start with assumption that goal is completed
     let goalStatus = moment().format();
@@ -402,7 +406,7 @@ export default class GoBitsApp extends React.Component {
       const prevStateCopy = prevState
 
       let goalDeleteIndex = prevStateCopy.goals.findIndex((g, i) => {
-        if (g.id === goalIndex){
+        if (g.id === goalId){
           return true
         }
       });
@@ -507,6 +511,7 @@ export default class GoBitsApp extends React.Component {
               handleDeleteTask={this.handleDeleteTask}
               handleThumbsDown={this.handleThumbsDown}
               handleFocusTask={this.handleFocusTask}
+              handleUpdateTask={this.handleUpdateTask}
               display={this.state.display}
             />
             <AddTask
@@ -568,6 +573,7 @@ export default class GoBitsApp extends React.Component {
         handleDeleteTask={this.handleDeleteTask}
         handleThumbsDown={this.handleThumbsDown}
         handleChangeFocusDate={this.handleChangeFocusDate}
+        handleUpdateTask={this.handleUpdateTask}
         focusedDate={this.state.focusedDate}
         handleFocusTask={this.handleFocusTask}
         handleAddTask={this.handleAddTask}
@@ -592,6 +598,7 @@ export default class GoBitsApp extends React.Component {
           handleCheck={this.handleCheck}
           handleDeleteTask={this.handleDeleteTask}
           handleThumbsDown={this.handleThumbsDown}
+          handleUpdateTask={this.handleUpdateTask}
           focusedDate={this.state.focusedDate}
           handleFocusTask={this.handleFocusTask}
           handleAddTask={this.handleAddTask}
@@ -604,7 +611,7 @@ export default class GoBitsApp extends React.Component {
   };
   handleChangeView = (view) => {
     this.setState(() => {
-      return{display: view}
+      return{display: view, focusedDate: moment().format("YYYY-MM-DD")}
     });
   };
   componentDidMount(){

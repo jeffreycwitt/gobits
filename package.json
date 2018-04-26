@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "serve": "live-server public/",
+    "serve": "live-server docs/",
     "build": "webpack",
     "dev-server": "webpack-dev-server"
   },

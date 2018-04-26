@@ -7,7 +7,7 @@ import moment from 'moment'
 export default class Tasks extends React.Component {
   filteredTodaysTasks = (date, tasks) => {
     if (!date){
-      date = moment().format("YYYY-MM-DD")
+      date = ""
     }
     const todaysTasks = tasks.filter((t,i) => {
       if (t.date === date){
@@ -34,6 +34,7 @@ export default class Tasks extends React.Component {
             focusedDate={currentDate}
             handleFocusTask={this.props.handleFocusTask}
             handleAddTask={this.props.handleAddTask}
+            handleUpdateTask={this.props.handleUpdateTask}
             display={this.props.display}
             goals={this.props.goals}
             categories={this.props.categories}
@@ -53,6 +54,7 @@ export default class Tasks extends React.Component {
           handleChangeFocusDate={this.props.handleChangeFocusDate}
           focusedDate={this.props.focusedDate}
           handleFocusTask={this.props.handleFocusTask}
+          handleUpdateTask={this.props.handleUpdateTask}
           current={true}
           handleAddTask={this.props.handleAddTask}
           display={this.props.display}
@@ -84,6 +86,25 @@ export default class Tasks extends React.Component {
           </div>
         )
       }
+      dayComponents.push(
+        <div>
+        <Today
+          tasks={this.filteredTodaysTasks("", this.props.tasks)}
+          goalId={this.props.focusedGoal}
+          handleCheck={this.props.handleCheck}
+          handleDeleteTask={this.props.handleDeleteTask}
+          handleThumbsDown={this.props.handleThumbsDown}
+          handleChangeFocusDate={this.props.handleChangeFocusDate}
+          focusedDate={""}
+          handleFocusTask={this.props.handleFocusTask}
+          handleUpdateTask={this.props.handleUpdateTask}
+          handleAddTask={this.props.handleAddTask}
+          display={this.props.display}
+          goals={this.props.goals}
+          categories={this.props.categories}
+        />
+        </div>
+      )
       return dayComponents
 
     }
