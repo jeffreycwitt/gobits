@@ -7,6 +7,17 @@ const Task = (props) => {
   const goalId = props.goalId ? props.goalId : undefined;
   const newDate = moment().add(1, "days").format("YYYY-MM-DD");
 
+  const displayBumpArrow = () => {
+    if (!props.task.completedAt && moment(props.task.date) <= moment()){
+      return(
+        <span className="fa fa-arrow-right"
+          onClick={(e) => {
+            props.handleUpdateTask(props.task.id, props.task.title, newDate, props.task.goal);
+          }}
+        />
+      )
+    }
+  }
   return (
     <li className={!props.task.completedAt ? "notCompleted task" : "completed task"}>
       <div>
@@ -35,11 +46,7 @@ const Task = (props) => {
           props.handleFocusTask(props.task.id);
         }}
       />
-      <span className="fa fa-arrow-right"
-        onClick={(e) => {
-          props.handleUpdateTask(props.task.id, props.task.title, newDate, props.task.goal);
-        }}
-      />
+      {displayBumpArrow()}
       </div>
     </li>
   );
