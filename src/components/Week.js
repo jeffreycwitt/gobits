@@ -4,7 +4,7 @@ import AddTask from './AddTask';
 import TodayNav from './TodayNav';
 import moment from 'moment'
 
-export default class Tasks extends React.Component {
+export default class Week extends React.Component {
   filteredTodaysTasks = (date, tasks) => {
     if (!date){
       date = ""
@@ -16,6 +16,17 @@ export default class Tasks extends React.Component {
       });
     return todaysTasks;
   };
+  // handleChangeGoalsFilter = (goalid, tasks) => {
+  //   const filteredTasks = tasks.filter((t,i) => {
+  //     if (goalid === undefined){
+  //       return t
+  //     }
+  //     else if (t.goal === goalid){
+  //       return t
+  //       }
+  //     });
+  //   return filteredTasks;
+  // }
   render(){
     const displayTodays = () => {
       let dayComponents = [];
@@ -23,9 +34,9 @@ export default class Tasks extends React.Component {
       for (i=0; i < 3; i++){
         let currentDate = moment(this.props.focusedDate).add(i-3, "days").format("YYYY-MM-DD");
         dayComponents.push(
-          <div>
+          <div key={i}>
           <Today
-            tasks={this.filteredTodaysTasks(currentDate, this.props.tasks)}
+            tasks={this.props.handleChangeGoalsFilter(this.props.focusedGoal, this.filteredTodaysTasks(currentDate, this.props.tasks))}
             goalId={this.props.focusedGoal}
             handleCheck={this.props.handleCheck}
             handleDeleteTask={this.props.handleDeleteTask}
@@ -38,15 +49,16 @@ export default class Tasks extends React.Component {
             display={this.props.display}
             goals={this.props.goals}
             categories={this.props.categories}
+            getTaskColor={this.props.getTaskColor}
           />
 
           </div>
         )
       }
       dayComponents.push(
-        <div>
+        <div key="today">
         <Today
-          tasks={this.filteredTodaysTasks(this.props.focusedDate, this.props.tasks)}
+          tasks={this.props.handleChangeGoalsFilter(this.props.focusedGoal, this.filteredTodaysTasks(this.props.focusedDate, this.props.tasks))}
           goalId={this.props.focusedGoal}
           handleCheck={this.props.handleCheck}
           handleDeleteTask={this.props.handleDeleteTask}
@@ -60,6 +72,7 @@ export default class Tasks extends React.Component {
           display={this.props.display}
           goals={this.props.goals}
           categories={this.props.categories}
+          getTaskColor={this.props.getTaskColor}
         />
         </div>
       )
@@ -67,9 +80,9 @@ export default class Tasks extends React.Component {
       for (i=4; i < 7; i++){
         let currentDate = moment(this.props.focusedDate).add(i-3, "days").format("YYYY-MM-DD");
         dayComponents.push(
-          <div>
+          <div key={i}>
           <Today
-            tasks={this.filteredTodaysTasks(currentDate, this.props.tasks)}
+            tasks={this.props.handleChangeGoalsFilter(this.props.focusedGoal, this.filteredTodaysTasks(currentDate, this.props.tasks))}
             goalId={this.props.focusedGoal}
             handleCheck={this.props.handleCheck}
             handleDeleteTask={this.props.handleDeleteTask}
@@ -81,15 +94,15 @@ export default class Tasks extends React.Component {
             display={this.props.display}
             goals={this.props.goals}
             categories={this.props.categories}
+            getTaskColor={this.props.getTaskColor}
           />
-
-          </div>
+        </div>
         )
       }
       dayComponents.push(
-        <div>
+        <div key="uncategorized">
         <Today
-          tasks={this.filteredTodaysTasks("", this.props.tasks)}
+          tasks={this.props.handleChangeGoalsFilter(this.props.focusedGoal, this.filteredTodaysTasks("", this.props.tasks))}
           goalId={this.props.focusedGoal}
           handleCheck={this.props.handleCheck}
           handleDeleteTask={this.props.handleDeleteTask}
@@ -102,6 +115,7 @@ export default class Tasks extends React.Component {
           display={this.props.display}
           goals={this.props.goals}
           categories={this.props.categories}
+          getTaskColor={this.props.getTaskColor}
         />
         </div>
       )
@@ -110,11 +124,17 @@ export default class Tasks extends React.Component {
     }
     return (
       <div className="week">
+        <div className="week-header-wrapper">
         <h2>Week</h2>
-        <TodayNav
-          focusedDate={this.props.focusedDate}
-          handleChangeFocusDate={this.props.handleChangeFocusDate}
-        />
+          <TodayNav
+            focusedDate={this.props.focusedDate}
+            handleChangeFocusDate={this.props.handleChangeFocusDate}
+            goals={this.props.goals}
+            categories={this.props.categories}
+            changeFocusedGoal={this.props.changeFocusedGoal}
+            focusedGoal={this.props.focusedGoal}
+          />
+        </div>
         <div className="week-wrapper">
         {displayTodays()}
         </div>

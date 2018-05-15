@@ -22,8 +22,9 @@ export default class Today extends React.Component {
               handleFocusTask={this.props.handleFocusTask}
               handleUpdateTask={this.props.handleUpdateTask}
               display={this.props.display}
+              color={this.props.getTaskColor(t)}
             />
-          
+
           );
       });
       return tasks

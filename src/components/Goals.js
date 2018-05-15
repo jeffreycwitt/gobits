@@ -12,6 +12,7 @@ export default class Goals extends React.Component {
           focusedGoal={this.props.focusedGoal}
           changeFocusedGoal={this.props.changeFocusedGoal}
           handleDeleteGoal={this.props.handleDeleteGoal}
+          handleFocusEditGoal={this.props.handleFocusEditGoal}
         />})}
       </div>
     );

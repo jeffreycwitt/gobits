@@ -18,8 +18,13 @@ const Task = (props) => {
       )
     }
   }
+  const borderColor = props.color ? props.color : "#fc846b"
+
+  const style = {
+    borderBottomColor: borderColor
+  }
   return (
-    <li className={!props.task.completedAt ? "notCompleted task" : "completed task"}>
+    <li className={!props.task.completedAt ? "notCompleted task" : "completed task"} style={style}>
       <div>
         {props.task.title}
         {props.display === "dashboard" && props.task.date}

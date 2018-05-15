@@ -11,14 +11,25 @@ export default class Goal extends React.Component {
     return classNameArray.join(' ');
   };
   render(){
+    const borderColor = this.props.goal.color ? this.props.goal.color : "#fc846b"
+
+    const style = {
+      borderBottomColor: borderColor
+    }
+
     return (
-      <li className={this.addClassNames()}>
-        <a onClick={this.changeFocusedGoal}>{this.props.goal.title} by {this.props.goal.date}</a>
-      {this.props.goal.id !== 'uncategorized' && <span className="fa fa-trash"
+      <li className={this.addClassNames()} style={style}>
+        <a onClick={this.changeFocusedGoal}>{this.props.goal.abbrevCode}::{this.props.goal.title} by {this.props.goal.date}</a>
+      {!this.props.goal.id.includes('uncategorized') && <span className="fa fa-trash"
         onClick={(e) => {
           this.props.handleDeleteGoal(this.props.goal.id);
         }}
       />}
+      <span className="fa fa-edit"
+        onClick={(e) => {
+          this.props.handleFocusEditGoal(this.props.goal.id);
+        }}
+      />
       </li>
     );
   }

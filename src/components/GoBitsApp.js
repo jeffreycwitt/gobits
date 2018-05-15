@@ -15,6 +15,7 @@ import Header from './Header'
 import Today from './Today'
 import NavBar from './NavBar'
 import EditTaskModal from './EditTaskModal'
+import EditGoalModal from './EditGoalModal'
 import Week from './Week'
 import TodayNav from './TodayNav'
 
@@ -35,6 +36,7 @@ export default class GoBitsApp extends React.Component {
     ],
     focusedTask: undefined,
     focusedGoal: undefined,
+    focusedEditGoal: undefined,
     focusedCategory: undefined,
     categories: [
       {
@@ -193,7 +195,9 @@ export default class GoBitsApp extends React.Component {
             category: category,
             date: date,
             completedAt: false,
-            createdAt: moment().format()
+            createdAt: moment().format(),
+            color: undefined,
+            abbrevCode: undefined
           }
         ),
         goldAmount: prevState.goldAmount + 1,
@@ -218,10 +222,12 @@ export default class GoBitsApp extends React.Component {
         ),
         goals: prevState.goals.concat(
           {
-            id: uuidv4(),
+            id: "uncategorized-" + uuidv4(),
             title: "Uncategorized",
             category: categoryId,
-            createdAt: moment().format()
+            createdAt: moment().format(),
+            color: "black",
+            abbrevCode: undefined
           }
         ),
         goldAmount: prevState.goldAmount + 1,
@@ -232,9 +238,17 @@ export default class GoBitsApp extends React.Component {
     this.setSubtitle();
   };
   handleAddTask = (task, date, goalId, category) => {
+
     if (!task){
       return 'Enter valid value to add item';
     }
+    if (task.includes("::")){
+      const abbrevCode = task.split("::")[0]
+      task = task.split("::")[1]
+      goalId = this.state.goals.filter(g => g.abbrevCode === abbrevCode)[0].id
+    }
+
+
     if (!goalId){
       goalId = "uncategorized-goal"
     }
@@ -287,6 +301,36 @@ export default class GoBitsApp extends React.Component {
     });
     this.setSubtitle();
   };
+  handleUpdateFocusedEditGoal = (goalId, title, date, category, color, abbrevCode) => {
+
+
+      this.setState((prevState) => {
+        let prevStateCopy = prevState;
+        //check if abbrev code has already been used
+        let x = undefined
+        this.state.goals.forEach((g) => {
+          if (g.abbrevCode === abbrevCode){
+            x = "This abbrev code has already been used";
+          }
+        });
+        //get current goal abbrev code to allow resubmission identical abbrev code for this goal
+        const currentGoalAbbrevCode = prevStateCopy.goals.filter(g => g.id === goalId)[0].abbrevCode;
+        if (currentGoalAbbrevCode !== abbrevCode && x){
+          return x
+        }
+
+        let updatingGoal = prevStateCopy.goals.filter(g => g.id === goalId)[0]
+        updatingGoal.title = title;
+        updatingGoal.date = date;
+        updatingGoal.category = category;
+        updatingGoal.color = color;
+        updatingGoal.abbrevCode = abbrevCode;
+        return {
+          goals: prevStateCopy.goals
+        }
+      });
+
+  }
 
   setGoalStatus = (goal) => {
     //start with assumption that goal is completed
@@ -402,16 +446,22 @@ export default class GoBitsApp extends React.Component {
   }
 
     this.setState((prevState) => {
-
-      const prevStateCopy = prevState
+      const prevStateCopy = prevState;
 
       let goalDeleteIndex = prevStateCopy.goals.findIndex((g, i) => {
         if (g.id === goalId){
           return true
         }
       });
+
+      prevStateCopy.tasks.forEach((t) => {
+        if (t.goal === goalId)
+        t.goal = "uncategorized-goal"
+      });
+
       prevStateCopy.goals.splice(goalDeleteIndex, 1);
       return {
+        tasks: prevStateCopy.tasks,
         goals: prevStateCopy.goals,
         goldAmount: prevState.goldAmount + 1
       }
@@ -424,23 +474,40 @@ export default class GoBitsApp extends React.Component {
     if (this.state.focusedCategory === categoryId){
       this.setState(() => {
       return {
-        focusedCategory: undefined
+        focusedCategory: "uncategorized"
         }
       });
     }
 
     this.setState((prevState) => {
 
-    const prevStateCopy = prevState
+      const prevStateCopy = prevState
+      let categoryDeleteIndex = prevStateCopy.categories.findIndex((c, i) => {
+        if (c.id === categoryId){
+          return true
+        }
+      });
+      prevStateCopy.categories.splice(categoryDeleteIndex, 1);
 
-    let categoryDeleteIndex = prevStateCopy.categories.findIndex((c, i) => {
-      if (c.id === categoryId){
-        return true
-      }
+      prevStateCopy.goals.forEach((g) => {
+        // change category of goals to uncategorized
+        if (g.category === categoryId){
+          g.category = "uncategorized";
+        }
+        // remove uncategorized goal for the category to be deleted
+        else if (g.category.includes("uncategorized")){
+          let goalDeleteIndex = prevStateCopy.goals.findIndex((g2, i) => {
+            if (g2.id === g.id){
+              return true
+            }
+          });
+          prevStateCopy.goals.splice(goalDeleteIndex, 1);
+        }
+
     });
-    prevStateCopy.categories.splice(categoryDeleteIndex, 1);
     return {
       categories: prevStateCopy.categories,
+      goals: prevStateCopy.goals,
       goldAmount: prevState.goldAmount + 1
       }
     });
@@ -454,10 +521,25 @@ export default class GoBitsApp extends React.Component {
       }
     });
   };
+  handleClearFocusedEditGoal = () => {
+    this.setState(() => {
+      return {
+        focusedEditGoal: undefined
+      }
+    });
+  };
   handleFocusTask = (taskId) => {
     this.setState(() => {
       return {
         focusedTask: taskId
+      }
+    });
+  };
+  handleFocusEditGoal = (goalId) => {
+
+    this.setState(() => {
+      return {
+        focusedEditGoal: goalId
       }
     });
   };
@@ -488,6 +570,17 @@ export default class GoBitsApp extends React.Component {
       return this.state.tasks;
     }
   };
+  handleChangeGoalsFilter = (goalid, tasks) => {
+    const filteredTasks = tasks.filter((t,i) => {
+      if (goalid === undefined){
+        return t
+      }
+      else if (t.goal === goalid){
+        return t
+        }
+      });
+    return filteredTasks;
+  }
   filteredTodaysTasks = (date) => {
     if (!date){
       date = moment().format("YYYY-MM-DD")
@@ -500,6 +593,22 @@ export default class GoBitsApp extends React.Component {
       });
     return todaysTasks;
   };
+  getTaskColor = (task) => {
+    const goalid = task.goal
+    const goal = this.state.goals.filter((g, i) => {
+      if (g.id === goalid){
+        return g
+      }
+    });
+    try {
+      const color = goal[0].color
+      return color
+    }
+    catch(err){
+      const color = undefined
+      return color
+    }
+  }
   displayTasks = () => {
     if (this.state.focusedGoal){
       return(
@@ -513,6 +622,7 @@ export default class GoBitsApp extends React.Component {
               handleFocusTask={this.handleFocusTask}
               handleUpdateTask={this.handleUpdateTask}
               display={this.state.display}
+              getTaskColor={this.getTaskColor}
             />
             <AddTask
               goalId={this.state.focusedGoal} handleAddTask={this.handleAddTask}/>
@@ -529,7 +639,10 @@ export default class GoBitsApp extends React.Component {
             focusedGoal={this.state.focusedGoal}
             category={this.state.focusedCategory}
             changeFocusedGoal={this.changeFocusedGoal}
-            handleDeleteGoal={this.handleDeleteGoal}/>
+            handleDeleteGoal={this.handleDeleteGoal}
+            handleFocusEditGoal={this.handleFocusEditGoal}
+          />
+
           <AddGoal
             category={this.state.focusedCategory}
             handleAddGoal={this.handleAddGoal} />
@@ -580,6 +693,10 @@ export default class GoBitsApp extends React.Component {
         display={this.state.display}
         goals={this.state.goals}
         categories={this.state.categories}
+        getTaskColor={this.getTaskColor}
+        focusedGoal={this.state.focusedGoal}
+        changeFocusedGoal={this.changeFocusedGoal}
+        handleChangeGoalsFilter={this.handleChangeGoalsFilter}
       />
     )
   }
@@ -591,9 +708,13 @@ export default class GoBitsApp extends React.Component {
         <TodayNav
           focusedDate={this.state.focusedDate}
           handleChangeFocusDate={this.handleChangeFocusDate}
+          goals={this.state.goals}
+          categories={this.state.categories}
+          changeFocusedGoal={this.changeFocusedGoal}
+          focusedGoal={this.state.focusedGoal}
         />
         <Today
-          tasks={this.filteredTodaysTasks(this.state.focusedDate)}
+          tasks={this.handleChangeGoalsFilter(this.state.focusedGoal, this.filteredTodaysTasks(this.state.focusedDate))}
           goalId={this.state.focusedGoal}
           handleCheck={this.handleCheck}
           handleDeleteTask={this.handleDeleteTask}
@@ -605,6 +726,7 @@ export default class GoBitsApp extends React.Component {
           display={this.state.display}
           goals={this.state.goals}
           categories={this.state.categories}
+          getTaskColor={this.getTaskColor}
         />
       </div>
     )
@@ -668,6 +790,14 @@ export default class GoBitsApp extends React.Component {
           display={this.state.display}
           focusedDate={this.state.focusedDate}
           goals={this.state.goals}
+          categories={this.state.categories}
+        />
+        <EditGoalModal
+          handleClearFocusedEditGoal={this.handleClearFocusedEditGoal}
+          focusedEditGoal={this.state.goals.filter(g => g.id === this.state.focusedEditGoal)[0]}
+          handleUpdateFocusedEditGoal={this.handleUpdateFocusedEditGoal}
+          display={this.state.display}
+          focusedDate={this.state.focusedDate}
           categories={this.state.categories}
         />
       </div>

@@ -17,6 +17,7 @@ export default class Tasks extends React.Component {
               handleFocusTask={this.props.handleFocusTask}
               handleUpdateTask={this.props.handleUpdateTask}
               display={this.props.display}
+              color={this.props.getTaskColor(t)}
             />
           );
       });
