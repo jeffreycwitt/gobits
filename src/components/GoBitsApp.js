@@ -302,22 +302,22 @@ export default class GoBitsApp extends React.Component {
     this.setSubtitle();
   };
   handleUpdateFocusedEditGoal = (goalId, title, date, category, color, abbrevCode) => {
-
+      //check if abbrev code has already been used
+      let x = undefined
+      this.state.goals.forEach((g) => {
+        if (g.abbrevCode === abbrevCode){
+          x = "This abbrev code has already been used";
+        }
+      });
+      //get current goal abbrev code to allow resubmission identical abbrev code for this goal
+      const currentGoalAbbrevCode = this.state.goals.filter(g => g.id === goalId)[0].abbrevCode;
+      if (currentGoalAbbrevCode !== abbrevCode && x){
+        return x
+      }
 
       this.setState((prevState) => {
         let prevStateCopy = prevState;
-        //check if abbrev code has already been used
-        let x = undefined
-        this.state.goals.forEach((g) => {
-          if (g.abbrevCode === abbrevCode){
-            x = "This abbrev code has already been used";
-          }
-        });
-        //get current goal abbrev code to allow resubmission identical abbrev code for this goal
-        const currentGoalAbbrevCode = prevStateCopy.goals.filter(g => g.id === goalId)[0].abbrevCode;
-        if (currentGoalAbbrevCode !== abbrevCode && x){
-          return x
-        }
+
 
         let updatingGoal = prevStateCopy.goals.filter(g => g.id === goalId)[0]
         updatingGoal.title = title;
