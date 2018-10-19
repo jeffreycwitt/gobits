@@ -1,0 +1,25 @@
+#headliner {color: $accent-orange;
+  font-family: $default-font, cursive;
+  //font-size: 50px;
+  //text-align: center;
+  padding: 5px;
+  margin: 0;
+
+}
+#tagliner{
+  color: #cdd0d5;
+  font-family: $default-font, cursive;
+  //font-size: 17px;
+  //text-align: center;
+  //margin: auto;
+  padding: 5px;
+  margin: 0;
+
+
+}
+.header{
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  font-size: 20px;
+}
