@@ -14,12 +14,26 @@
   //margin: auto;
   padding: 5px;
   margin: 0;
+}
+#user{
+  color: $accent-orange;
+  font-family: $default-font, cursive;
+  //font-size: 17px;
+  //text-align: center;
+  //margin: auto;
+  padding: 5px;
+  margin: 0;
 
 
 }
-.header{
+#header{
+  display: flex;
+  justify-content: space-between;
+  margin: 10px;
+  font-size: 20px;
+}
+.header-wrapper{
   display: flex;
   justify-content: center;
-  margin: 10px;
   font-size: 20px;
 }

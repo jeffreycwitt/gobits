@@ -18,6 +18,7 @@ import EditTaskModal from './EditTaskModal'
 import EditGoalModal from './EditGoalModal'
 import Week from './Week'
 import TodayNav from './TodayNav'
+import ImportExport from './ImportExport'
 
 export default class GoBitsApp extends React.Component {
   emptyState =  {
@@ -755,6 +756,20 @@ export default class GoBitsApp extends React.Component {
     localStorage.setItem("gobitsState", JSON.stringify(this.state))
 
   }
+  handleImportState = (text) => {
+    // try to load data from local storage
+    try {
+      const state = JSON.parse(text);
+      //only load state if state is not empty
+      if (state){
+        this.setState(() => (state));
+      }
+    }
+    // if import update fails do nothing and proceed with the default state
+    catch (e) {
+      console.log("error", e)
+    }
+  }
   displayCurrentView = () => {
     if (this.state.display === "dashboard"){
       return this.displayDashboard();
@@ -772,9 +787,10 @@ export default class GoBitsApp extends React.Component {
     console.log("state at render", this.state)
     return (
       <div>
-        <Header title={title} subtitle={this.state.subtitle} />
+        <Header title={title} subtitle={this.state.subtitle} user={this.state.user}/>
+
         <hr/>
-        <User user={this.state.user}/>
+        {/* <User user={this.state.user}/> */}
         <NavBar currentView={this.state.display} changeView={this.handleChangeView}/>
         <hr/>
         {this.displayCurrentView()}
@@ -800,6 +816,7 @@ export default class GoBitsApp extends React.Component {
           focusedDate={this.state.focusedDate}
           categories={this.state.categories}
         />
+        <ImportExport currentState={this.state} handleImportState={this.handleImportState}/>
       </div>
     )
   }
