@@ -352,6 +352,7 @@ export default class GoBitsApp extends React.Component {
     }
     return goalStatus
   };
+  //alias: handle complete/uncomplete task
   handleCheck = (taskId, goalId) => {
 
     this.setState((prevState) => {
@@ -359,8 +360,15 @@ export default class GoBitsApp extends React.Component {
         goalId = prevState.tasks.filter(t => t.id === taskId)[0].goal
       }
       const currentValue = prevState.tasks.filter(t => t.id === taskId)[0].completedAt
+      const taskDate = prevState.tasks.filter(t => t.id === taskId)[0].date
       const prevStateCopy = prevState
+
+      //toggle task from uncompleted to completed or vice versa
       prevStateCopy.tasks.filter(t => t.id === taskId)[0].completedAt = !currentValue ? moment().format() : false;
+      // check if there is a due date attached to this item
+      // if there is NOT, then if the task is being completed,
+      // then assign it to today's date
+      prevStateCopy.tasks.filter(t => t.id === taskId)[0].date = (!taskDate && !currentValue) ? moment().format("YYYY-MM-DD") : taskDate;
       const goalStatus = this.setGoalStatus(prevStateCopy.goals.filter(g => g.id === goalId)[0]);
       prevStateCopy.goals.filter(g => g.id === goalId)[0].completedAt = goalStatus;
 
