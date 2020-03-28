@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "4e9dd9d9fa00c1ae762aee18f7681895",
+    "revision": "3dd4c3aeab70cbbb22ba43fccd5b890a",
     "url": "/gobits/index.html"
   },
   {
-    "revision": "1c571c94b14674c8267c",
+    "revision": "570f491d26cff6e1a026",
     "url": "/gobits/static/css/main.a6a88db8.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/gobits/static/js/2.c2a71a6c.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "1c571c94b14674c8267c",
-    "url": "/gobits/static/js/main.ea35eb32.chunk.js"
+    "revision": "570f491d26cff6e1a026",
+    "url": "/gobits/static/js/main.ab4e70c5.chunk.js"
   },
   {
     "revision": "d805dfbdcb218aecd43a",

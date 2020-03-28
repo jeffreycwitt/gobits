@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/gobits/static/css/main.a6a88db8.chunk.css",
-    "main.js": "/gobits/static/js/main.ea35eb32.chunk.js",
-    "main.js.map": "/gobits/static/js/main.ea35eb32.chunk.js.map",
+    "main.js": "/gobits/static/js/main.ab4e70c5.chunk.js",
+    "main.js.map": "/gobits/static/js/main.ab4e70c5.chunk.js.map",
     "runtime-main.js": "/gobits/static/js/runtime-main.128a2227.js",
     "runtime-main.js.map": "/gobits/static/js/runtime-main.128a2227.js.map",
     "static/js/2.c2a71a6c.chunk.js": "/gobits/static/js/2.c2a71a6c.chunk.js",
     "static/js/2.c2a71a6c.chunk.js.map": "/gobits/static/js/2.c2a71a6c.chunk.js.map",
     "index.html": "/gobits/index.html",
-    "precache-manifest.9cc54f5f0a6d4e7e08522c25d2cb7921.js": "/gobits/precache-manifest.9cc54f5f0a6d4e7e08522c25d2cb7921.js",
+    "precache-manifest.497408c6d67bed6dded3fc9b9afa3960.js": "/gobits/precache-manifest.497408c6d67bed6dded3fc9b9afa3960.js",
     "service-worker.js": "/gobits/service-worker.js",
     "static/css/main.a6a88db8.chunk.css.map": "/gobits/static/css/main.a6a88db8.chunk.css.map",
     "static/js/2.c2a71a6c.chunk.js.LICENSE.txt": "/gobits/static/js/2.c2a71a6c.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.128a2227.js",
     "static/js/2.c2a71a6c.chunk.js",
     "static/css/main.a6a88db8.chunk.css",
-    "static/js/main.ea35eb32.chunk.js"
+    "static/js/main.ab4e70c5.chunk.js"
   ]
 }
